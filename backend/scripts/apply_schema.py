@@ -3,12 +3,18 @@
 from __future__ import annotations
 
 import argparse
+import logging
 import os
-import sys
 from pathlib import Path
 
 import psycopg
 from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+)
 
 
 def main() -> int:
@@ -19,13 +25,13 @@ def main() -> int:
     load_dotenv()
     database_url = os.getenv("DATABASE_URL")
     if not database_url:
-        print("DATABASE_URL is required.", file=sys.stderr)
+        logger.error("DATABASE_URL is required.")
         return 1
 
     if args.reset:
         confirmation = input("Type RESET to drop all DocuLens tables: ")
         if confirmation != "RESET":
-            print("Reset cancelled.")
+            logger.warning("Reset cancelled.")
             return 1
 
     schema_path = Path(__file__).parents[2] / "database" / "schema.sql"
@@ -39,7 +45,7 @@ def main() -> int:
                 )
             cursor.execute(schema_sql)
         connection.commit()
-    print("Schema applied.")
+    logger.info("Schema applied.")
     return 0
 
 
