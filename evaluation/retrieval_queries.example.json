@@ -1,0 +1,7 @@
+[
+  {
+    "query": "What was the Q1 2025 revenue?",
+    "type": "table",
+    "expected": [{"filename": "text_table.pdf", "page": 3}]
+  }
+]

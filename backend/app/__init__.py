@@ -37,10 +37,12 @@ def create_app(overrides: dict[str, Any] | None = None) -> Flask:
 
     from .api.health import health_bp
     from .api.documents import documents_bp
+    from .api.search import search_bp
     from .services.ingestion import executor
 
     app.register_blueprint(health_bp)
     app.register_blueprint(documents_bp)
+    app.register_blueprint(search_bp)
     register_error_handlers(app)
     app.extensions["close_db_pool"] = close_pool
     app.extensions["ingestion_executor"] = executor

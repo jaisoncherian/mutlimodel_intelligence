@@ -1,0 +1,98 @@
+[
+  {
+    "query": "What does Northwind Components manufacture?",
+    "type": "text",
+    "expected": [{"filename": "text_table.pdf", "page": 1}]
+  },
+  {
+    "query": "What financial year does the manufacturing report summarize?",
+    "type": "text",
+    "expected": [{"filename": "text_table.pdf", "page": 1}]
+  },
+  {
+    "query": "When did planned maintenance take place?",
+    "type": "text",
+    "expected": [{"filename": "text_table.pdf", "page": 2}]
+  },
+  {
+    "query": "How many rejected units were recorded during 2025?",
+    "type": "text",
+    "expected": [{"filename": "text_table.pdf", "page": 4}]
+  },
+  {
+    "query": "What does the report recommend comparing before making budget decisions?",
+    "type": "text",
+    "expected": [{"filename": "text_table.pdf", "page": 5}]
+  },
+  {
+    "query": "What was the revenue in Q4 2025?",
+    "type": "table",
+    "expected": [{"filename": "text_table.pdf", "page": 3}]
+  },
+  {
+    "query": "What was the operating cost in Q2 2025?",
+    "type": "table",
+    "expected": [{"filename": "text_table.pdf", "page": 3}]
+  },
+  {
+    "query": "How many units were produced in Q3 2025?",
+    "type": "table",
+    "expected": [{"filename": "text_table.pdf", "page": 3}]
+  },
+  {
+    "query": "Which quarter had the highest revenue?",
+    "type": "table",
+    "expected": [{"filename": "text_table.pdf", "page": 3}]
+  },
+  {
+    "query": "Which section is titled Quality Metrics?",
+    "type": "exact-term",
+    "expected": [{"filename": "text_table.pdf", "page": 4}]
+  },
+  {
+    "query": "Find the exact phrase 'additional inspection'.",
+    "type": "exact-term",
+    "expected": [{"filename": "text_table.pdf", "page": 4}]
+  },
+  {
+    "query": "Which section contains the heading '3. Evaluation'?",
+    "type": "exact-term",
+    "expected": [{"filename": "two_column.pdf", "page": 1}]
+  },
+  {
+    "query": "What manufacturing activity does the company carry out?",
+    "type": "paraphrase",
+    "expected": [{"filename": "text_table.pdf", "page": 1}]
+  },
+  {
+    "query": "When was routine factory servicing scheduled?",
+    "type": "paraphrase",
+    "expected": [{"filename": "text_table.pdf", "page": 2}]
+  },
+  {
+    "query": "What does the document recommend monitoring to identify persistent quality problems?",
+    "type": "paraphrase",
+    "expected": [{"filename": "text_table.pdf", "page": 4}]
+  },
+  {
+    "query": "Why should a PDF system preserve the location of each extracted segment?",
+    "type": "paraphrase",
+    "expected": [{"filename": "two_column.pdf", "page": 1}]
+  },
+  {
+    "query": "Compare the report's quarterly financial information with the research paper's concerns about preserving table structure.",
+    "type": "cross-doc",
+    "expected": [
+      {"filename": "text_table.pdf", "page": 3},
+      {"filename": "two_column.pdf", "page": 1}
+    ]
+  },
+  {
+    "query": "Which document describes scanned pages and OCR, and which contains the manufacturing report's quarterly figures?",
+    "type": "cross-doc",
+    "expected": [
+      {"filename": "two_column.pdf", "page": 1},
+      {"filename": "text_table.pdf", "page": 3}
+    ]
+  }
+]

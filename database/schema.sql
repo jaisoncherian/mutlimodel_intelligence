@@ -28,6 +28,8 @@ alter table pages add column if not exists extraction_method text
     default 'text'
     check (extraction_method in ('text', 'ocr', 'mixed'));
 alter table pages add column if not exists ocr_confidence real;
+alter table documents add column if not exists chunk_count int;
+alter table documents add column if not exists indexed_at timestamptz;
 
 create table if not exists page_tables (
     id bigint generated always as identity primary key,
@@ -51,6 +53,9 @@ create table if not exists chunks (
     embedding extensions.vector(384),
     fts tsvector generated always as (to_tsvector('english', content)) stored
 );
+alter table chunks add column if not exists chunk_index int not null default 0;
+alter table chunks add column if not exists table_index int;
+alter table chunks add column if not exists token_count int;
 
 create table if not exists conversations (
     id uuid primary key default gen_random_uuid(),
@@ -95,6 +100,8 @@ create index if not exists chunks_user_id_idx on chunks(user_id);
 create index if not exists chunks_fts_idx on chunks using gin(fts);
 create index if not exists chunks_embedding_idx on chunks
     using hnsw (embedding extensions.vector_cosine_ops);
+create unique index if not exists chunks_doc_page_type_index_idx
+    on chunks(doc_id, page_number, content_type, chunk_index);
 create index if not exists messages_conversation_id_idx
     on messages(conversation_id);
 create index if not exists citations_message_id_idx on citations(message_id);

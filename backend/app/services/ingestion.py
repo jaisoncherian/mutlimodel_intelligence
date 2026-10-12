@@ -13,7 +13,7 @@ import pdfplumber
 from flask import Flask
 
 from ..repositories import documents
-from . import pdf_parser, storage
+from . import indexing, pdf_parser, storage
 
 logger = logging.getLogger(__name__)
 executor = ThreadPoolExecutor(max_workers=2)
@@ -91,6 +91,7 @@ def process_document(document_id: UUID) -> None:
                     page_records.append(page_record)
         documents.clear_pages_and_tables(document_id)
         documents.save_pages_and_tables(document_id, page_records, table_records)
+        indexing.index_document(document_id)
         documents.set_status(document_id, "ready", len(page_records), None)
     except Exception:
         logger.exception("Failed to ingest document %s", document_id)

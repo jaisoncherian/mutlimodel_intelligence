@@ -22,6 +22,7 @@ class DocumentSummary(BaseModel):
     status: str
     page_count: int | None = None
     uploaded_at: datetime | None = None
+    chunk_count: int | None = None
 
 
 class DocumentDetails(DocumentSummary):
@@ -42,3 +43,34 @@ class PageResponse(BaseModel):
     is_scanned: bool
     ocr_confidence: float | None
     tables: list[TableResponse]
+
+
+class ChunkResponse(BaseModel):
+    id: int
+    doc_id: UUID
+    page_number: int
+    section: str | None = None
+    content_type: str
+    chunk_index: int
+    table_index: int | None = None
+    token_count: int | None = None
+    text: str
+
+
+class SearchScores(BaseModel):
+    rrf: float | None = None
+    vector_similarity: float | None = None
+    vector_rank: int | None = None
+    keyword_rank: int | None = None
+
+
+class SearchHit(BaseModel):
+    chunk_id: int
+    doc_id: UUID
+    filename: str
+    page_number: int
+    section: str | None = None
+    content_type: str
+    table_index: int | None = None
+    text: str
+    scores: SearchScores

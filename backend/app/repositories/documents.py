@@ -28,8 +28,8 @@ def get_document(document_id: UUID) -> dict[str, Any] | None:
         with connection.cursor(row_factory=dict_row) as cursor:
             cursor.execute(
                 """
-                select id, filename, storage_path, page_count, status,
-                       error_message, uploaded_at
+                select id, user_id, filename, storage_path, page_count, status,
+                       error_message, uploaded_at, chunk_count, indexed_at
                 from documents where id = %s
                 """,
                 (document_id,),
@@ -37,12 +37,39 @@ def get_document(document_id: UUID) -> dict[str, Any] | None:
             return cursor.fetchone()
 
 
+def list_pages_for_index(document_id: UUID) -> list[dict[str, Any]]:
+    with get_conn() as connection:
+        with connection.cursor(row_factory=dict_row) as cursor:
+            cursor.execute(
+                """
+                select page_number, text, blocks, extraction_method
+                from pages where doc_id = %s order by page_number
+                """,
+                (document_id,),
+            )
+            return list(cursor.fetchall())
+
+
+def list_tables_for_index(document_id: UUID) -> list[dict[str, Any]]:
+    with get_conn() as connection:
+        with connection.cursor(row_factory=dict_row) as cursor:
+            cursor.execute(
+                """
+                select page_number, table_index, headers, rows, markdown
+                from page_tables where doc_id = %s
+                order by page_number, table_index
+                """,
+                (document_id,),
+            )
+            return list(cursor.fetchall())
+
+
 def list_documents() -> list[dict[str, Any]]:
     with get_conn() as connection:
         with connection.cursor(row_factory=dict_row) as cursor:
             cursor.execute(
                 """
-                select id, filename, page_count, status, uploaded_at
+                select id, filename, page_count, status, uploaded_at, chunk_count
                 from documents order by uploaded_at desc
                 """
             )
@@ -122,6 +149,19 @@ def set_status(
                 where id = %s
                 """,
                 (status, page_count, error_message, document_id),
+            )
+
+
+def set_indexed(document_id: UUID, chunk_count: int) -> None:
+    with get_conn() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                update documents
+                set chunk_count = %s, indexed_at = now()
+                where id = %s
+                """,
+                (chunk_count, document_id),
             )
 
 
