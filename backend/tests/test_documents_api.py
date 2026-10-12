@@ -27,6 +27,7 @@ def app(monkeypatch: pytest.MonkeyPatch):
     app = create_app({"TESTING": True, "DATABASE_URL": ""})
     monkeypatch.setattr(storage, "upload_bytes", lambda *args: None)
     monkeypatch.setattr(storage, "delete_prefix", lambda *args: None)
+    monkeypatch.setattr(storage, "cleanup_document_storage", lambda *args, **kwargs: "ok")
     monkeypatch.setattr(ingestion, "submit_document", lambda *args: None)
     return app
 
@@ -75,5 +76,28 @@ def test_document_crud_and_reprocess(app, monkeypatch) -> None:
     assert client.get("/documents").status_code == 200
     assert client.get(f"/documents/{document_id}").status_code == 200
     assert client.post(f"/documents/{document_id}/reprocess").status_code == 202
-    assert client.delete(f"/documents/{document_id}").status_code == 204
+    delete_response = client.delete(f"/documents/{document_id}")
+    assert delete_response.status_code == 200
+    assert delete_response.get_json() == {"deleted": True, "storage_cleanup": "ok"}
     assert client.get("/documents/00000000-0000-0000-0000-000000000000").status_code == 404
+
+
+def test_delete_reports_partial_storage_cleanup(app, monkeypatch) -> None:
+    document_id = uuid4()
+    row = {
+        "id": document_id,
+        "filename": "a.pdf",
+        "storage_path": f"{document_id}.pdf",
+        "page_count": 1,
+        "status": "ready",
+        "error_message": None,
+        "uploaded_at": datetime.now(timezone.utc),
+    }
+    monkeypatch.setattr(documents, "get_document", lambda value: row if value == document_id else None)
+    monkeypatch.setattr(documents, "delete_document", lambda value: None)
+    monkeypatch.setattr(storage, "cleanup_document_storage", lambda *args, **kwargs: "partial")
+
+    response = app.test_client().delete(f"/documents/{document_id}")
+
+    assert response.status_code == 200
+    assert response.get_json() == {"deleted": True, "storage_cleanup": "partial"}

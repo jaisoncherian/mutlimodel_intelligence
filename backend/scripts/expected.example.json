@@ -1,0 +1,16 @@
+{
+  "text_table.pdf": {
+    "page_count": 1,
+    "table_page": 1,
+    "table_values": ["value1", "value2", "value3"]
+  },
+  "two_column.pdf": {
+    "page_count": 1,
+    "left_phrase": "left column text",
+    "right_phrase": "right column text"
+  },
+  "scan.pdf": {
+    "page_count": 1,
+    "expected_words": ["doculens", "pdf", "scan"]
+  }
+}

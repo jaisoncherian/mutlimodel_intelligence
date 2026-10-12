@@ -95,7 +95,7 @@ def process_document(document_id: UUID) -> None:
     except Exception:
         logger.exception("Failed to ingest document %s", document_id)
         try:
-            storage.delete_prefix("page-images", str(document_id))
+            storage.cleanup_document_storage(document_id, include_pdf=False)
         except Exception:
             logger.exception("Failed to clean page images for document %s", document_id)
         documents.set_status(

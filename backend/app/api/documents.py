@@ -58,7 +58,7 @@ def upload_documents() -> tuple[Any, int]:
             try:
                 documents.insert_document(document_id, filename, path)
             except Exception:
-                storage.delete_prefix("pdfs", str(document_id))
+                storage.cleanup_document_storage(document_id)
                 raise
             ingestion.submit_document(current_app._get_current_object(), document_id)
             results.append(
@@ -119,10 +119,10 @@ def delete_document(document_id: str) -> tuple[Any, int]:
     parsed_id = _document_id(document_id)
     if documents.get_document(parsed_id) is None:
         raise NotFound("Document not found.")
+
     documents.delete_document(parsed_id)
-    storage.delete_prefix("pdfs", str(parsed_id))
-    storage.delete_prefix("page-images", str(parsed_id))
-    return "", 204
+    storage_cleanup = storage.cleanup_document_storage(parsed_id)
+    return jsonify({"deleted": True, "storage_cleanup": storage_cleanup}), 200
 
 
 @documents_bp.post("/<document_id>/reprocess")
@@ -132,6 +132,6 @@ def reprocess_document(document_id: str) -> tuple[Any, int]:
         raise NotFound("Document not found.")
     documents.clear_pages_and_tables(parsed_id)
     documents.set_status(parsed_id, "processing", error_message=None)
-    storage.delete_prefix("page-images", str(parsed_id))
+    storage.cleanup_document_storage(parsed_id, include_pdf=False)
     ingestion.submit_document(current_app._get_current_object(), parsed_id)
     return jsonify(document_id=str(parsed_id), status="processing"), 202

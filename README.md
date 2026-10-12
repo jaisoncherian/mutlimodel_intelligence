@@ -60,3 +60,16 @@ Apply the current schema before using document endpoints:
 ```powershell
 python scripts/apply_schema.py
 ```
+
+## Running the smoke test
+
+Generate the live PDF fixtures from the backend folder, copy the example expected values, and run the end-to-end checks against the running server and real Supabase services:
+
+```powershell
+cd backend
+python scripts/make_fixtures.py --source C:\path\to\source.pdf
+Copy-Item scripts\expected.example.json data\sample_pdfs\expected.json
+python scripts/smoke_test.py --base-url http://127.0.0.1:5000 --dir data\sample_pdfs
+```
+
+Use `--keep` to keep uploaded documents in Supabase after the smoke run.
