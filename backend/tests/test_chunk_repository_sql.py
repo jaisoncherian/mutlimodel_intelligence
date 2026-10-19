@@ -69,6 +69,37 @@ def test_search_sql_parameter_counts_match_placeholders(monkeypatch) -> None:
     assert keyword_cursor.query.count("%s") == len(keyword_cursor.params)
 
 
+def test_vector_search_excludes_references_by_default(monkeypatch) -> None:
+    cursor = FakeCursor()
+    monkeypatch.setattr(chunks, "get_conn", lambda: FakeConnection(cursor))
+    chunks.vector_search([0.1, 0.2])
+    assert "lower(c.section) NOT IN" in cursor.query
+    assert "references" in cursor.query
+    assert "bibliography" in cursor.query
+    assert "works cited" in cursor.query
+
+
+def test_vector_search_includes_references_when_requested(monkeypatch) -> None:
+    cursor = FakeCursor()
+    monkeypatch.setattr(chunks, "get_conn", lambda: FakeConnection(cursor))
+    chunks.vector_search([0.1, 0.2], include_references=True)
+    assert "lower(c.section) NOT IN" not in cursor.query
+
+
+def test_keyword_search_excludes_references_by_default(monkeypatch) -> None:
+    cursor = FakeCursor()
+    monkeypatch.setattr(chunks, "get_conn", lambda: FakeConnection(cursor))
+    chunks.keyword_search("revenue | cost")
+    assert "lower(c.section) NOT IN" in cursor.query
+
+
+def test_keyword_search_includes_references_when_requested(monkeypatch) -> None:
+    cursor = FakeCursor()
+    monkeypatch.setattr(chunks, "get_conn", lambda: FakeConnection(cursor))
+    chunks.keyword_search("revenue | cost", include_references=True)
+    assert "lower(c.section) NOT IN" not in cursor.query
+
+
 def test_schema_has_phase3_chunk_columns() -> None:
     schema_path = Path(__file__).parents[2] / "database" / "schema.sql"
     schema = schema_path.read_text(encoding="utf-8")

@@ -79,9 +79,14 @@ def count_chunks(doc_id: UUID) -> int:
 
 
 def vector_search(query_vector: list[float], k: int = 30, doc_ids: list[UUID] | None = None,
-                  content_types: list[str] | None = None, user_id: UUID | None = None) -> list[dict[str, Any]]:
+                  content_types: list[str] | None = None, user_id: UUID | None = None,
+                  include_references: bool = False) -> list[dict[str, Any]]:
     vector = "[" + ",".join(str(float(v)) for v in query_vector) + "]"
     conditions = ["c.embedding is not null"]
+    if not include_references:
+        conditions.append(
+            "(c.section IS NULL OR lower(c.section) NOT IN ('references', 'bibliography', 'works cited'))"
+        )
     filter_params: list[Any] = []
     if doc_ids:
         conditions.append("c.doc_id = any(%s)")
@@ -110,8 +115,13 @@ def vector_search(query_vector: list[float], k: int = 30, doc_ids: list[UUID] | 
 
 
 def keyword_search(tsquery: str, k: int = 30, doc_ids: list[UUID] | None = None,
-                   content_types: list[str] | None = None, user_id: UUID | None = None) -> list[dict[str, Any]]:
+                   content_types: list[str] | None = None, user_id: UUID | None = None,
+                   include_references: bool = False) -> list[dict[str, Any]]:
     conditions = ["c.fts @@ to_tsquery('english', %s)"]
+    if not include_references:
+        conditions.append(
+            "(c.section IS NULL OR lower(c.section) NOT IN ('references', 'bibliography', 'works cited'))"
+        )
     filter_params: list[Any] = []
     if doc_ids:
         conditions.append("c.doc_id = any(%s)")

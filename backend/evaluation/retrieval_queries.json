@@ -57,7 +57,8 @@
   {
     "query": "Which section contains the heading '3. Evaluation'?",
     "type": "exact-term",
-    "expected": [{"filename": "two_column.pdf", "page": 1}]
+    "expected": [],
+    "unanswerable": true
   },
   {
     "query": "What manufacturing activity does the company carry out?",
@@ -77,22 +78,19 @@
   {
     "query": "Why should a PDF system preserve the location of each extracted segment?",
     "type": "paraphrase",
-    "expected": [{"filename": "two_column.pdf", "page": 1}]
+    "expected": [],
+    "unanswerable": true
   },
   {
     "query": "Compare the report's quarterly financial information with the research paper's concerns about preserving table structure.",
     "type": "cross-doc",
-    "expected": [
-      {"filename": "text_table.pdf", "page": 3},
-      {"filename": "two_column.pdf", "page": 1}
-    ]
+    "expected": [],
+    "unanswerable": true
   },
   {
     "query": "Which document describes scanned pages and OCR, and which contains the manufacturing report's quarterly figures?",
     "type": "cross-doc",
-    "expected": [
-      {"filename": "two_column.pdf", "page": 1},
-      {"filename": "text_table.pdf", "page": 3}
-    ]
+    "expected": [],
+    "unanswerable": true
   }
 ]

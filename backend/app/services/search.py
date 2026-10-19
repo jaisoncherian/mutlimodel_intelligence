@@ -39,12 +39,14 @@ def _merge(vector_rows: list[dict[str, Any]], keyword_rows: list[dict[str, Any]]
 
 def search(query: str, k: int = 5, doc_ids: list[UUID] | None = None,
            content_types: list[str] | None = None, mode: str = "hybrid",
-           user_id: UUID | None = None) -> list[dict[str, Any]]:
+           user_id: UUID | None = None, include_references: bool = False) -> list[dict[str, Any]]:
     terms = _terms(query)
     vector_rows = chunks.vector_search(
-        embeddings.embed_texts([query])[0], 30, doc_ids, content_types, user_id
+        embeddings.embed_texts([query])[0], 30, doc_ids, content_types, user_id,
+        include_references=include_references,
     ) if mode in {"hybrid", "vector"} else []
-    keyword_rows = chunks.keyword_search(" | ".join(terms), 30, doc_ids, content_types, user_id) if terms and mode in {"hybrid", "keyword"} else []
+    keyword_rows = chunks.keyword_search(" | ".join(terms), 30, doc_ids, content_types, user_id,
+                                         include_references=include_references) if terms and mode in {"hybrid", "keyword"} else []
     if mode == "vector":
         return _merge(vector_rows, [], k)
     if mode == "keyword":

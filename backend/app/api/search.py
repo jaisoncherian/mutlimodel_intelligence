@@ -45,8 +45,12 @@ def search_documents() -> tuple[Any, int]:
             raise BadRequest("types contains an unsupported content type.")
     else:
         content_types_list = None
+    include_references = request.args.get("include_references", "false")
+    if include_references.lower() not in {"true", "false"}:
+        raise BadRequest("include_references must be true or false.")
     hits = search_service.search(
-        query, k, _uuid_list(request.args.get("doc_ids")), content_types_list, mode
+        query, k, _uuid_list(request.args.get("doc_ids")), content_types_list, mode,
+        include_references=include_references.lower() == "true",
     )
     return jsonify([SearchHit.model_validate(hit).model_dump(mode="json") for hit in hits]), 200
 
