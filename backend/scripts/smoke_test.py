@@ -24,6 +24,8 @@ if str(ROOT) not in sys.path:
 from app import create_app
 from app.services import storage
 
+import pytest
+
 
 DEFAULT_TIMEOUT_SECONDS = 300
 DEFAULT_BASE_URL = "http://127.0.0.1:5000"
@@ -504,6 +506,20 @@ def main() -> int:
                 pass
 
     return 1 if failures else 0
+
+
+@pytest.mark.integration
+def test_smoke_e2e():
+    """Live end-to-end smoke test integration runner."""
+    try:
+        resp = requests.get(f"{DEFAULT_BASE_URL}/health", timeout=5)
+        if resp.status_code != 200:
+            pytest.skip(f"Live server at {DEFAULT_BASE_URL} returned status {resp.status_code}")
+    except requests.exceptions.RequestException:
+        pytest.skip(f"Live server not reachable at {DEFAULT_BASE_URL}")
+
+    exit_code = main()
+    assert exit_code == 0, "Smoke test failed"
 
 
 if __name__ == "__main__":
