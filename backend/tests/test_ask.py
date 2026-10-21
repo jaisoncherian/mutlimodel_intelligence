@@ -71,7 +71,14 @@ class FakeOllamaClient:
 @pytest.fixture
 def app(monkeypatch):
     """Flask test app with DB and conversation repo mocked out."""
-    _app = create_app({"TESTING": True, "DATABASE_URL": "", "MIN_SIMILARITY": 0.15})
+    # VERIFY_MODE=off: Phase 4 tests must not be affected by the Phase 5A
+    # verification layer. Tests that exercise verification use their own fixtures.
+    _app = create_app({
+        "TESTING": True,
+        "DATABASE_URL": "",
+        "MIN_SIMILARITY": 0.15,
+        "VERIFY_MODE": "off",
+    })
 
     # --- Mock conversation repo ---
     _store: dict[str, Any] = {"convs": {}, "messages": [], "citations": []}

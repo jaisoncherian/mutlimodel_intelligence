@@ -75,6 +75,9 @@ def app(monkeypatch):
         "DATABASE_URL": "",
         "MIN_SIMILARITY": 0.15,
         "VISION_ENABLED": True,
+        # VERIFY_MODE=off: Phase 4C tests must not be affected by the Phase 5A
+        # verification layer. Tests exercising verification use their own fixtures.
+        "VERIFY_MODE": "off",
     })
 
     store: dict[str, Any] = {"convs": {}, "messages": [], "citations": []}

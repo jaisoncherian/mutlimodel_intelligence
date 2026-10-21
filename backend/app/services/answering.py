@@ -48,6 +48,7 @@ from ..services.prompts import (
     build_compose_messages,
     build_source_block,
 )
+from ..services.verification import verify_answer, _error_result
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +91,7 @@ def answer_question(
     k: int,
     ollama_client: OllamaClient | None = None,
     storage_download_fn: Any = None,
+    eval_overrides: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Retrieve evidence, call the model (1–2 passes), validate, compute, persist, and return.
 
@@ -100,11 +102,20 @@ def answer_question(
         k:                   Number of chunks to retrieve (capped at 12).
         ollama_client:       Injected for testing; defaults to one built from config.
         storage_download_fn: Optional callable for storage image downloads.
+        eval_overrides:      Optional dict of config overrides (only honoured when
+                             ALLOW_EVAL_OVERRIDES=True in app config). Keys follow
+                             the Config class names (e.g. VERIFY_MODE, VISION_ENABLED).
 
     Returns:
         A dict matching the /ask response schema.
     """
     config = current_app.config
+    # Apply eval overrides on top of app config (only when the feature flag is on).
+    # This produces a plain dict so we never mutate the Flask config object.
+    if eval_overrides and config.get("ALLOW_EVAL_OVERRIDES", False):
+        config = dict(config)
+        config.update(eval_overrides)
+
     if ollama_client is None:
         ollama_client = make_client_from_config(config)
 
@@ -182,6 +193,13 @@ def answer_question(
             image_sources = []
             images_b64 = []
             used_vision = False
+
+    # Track exactly which source ids were sent to the model in the prompt.
+    # Chunks retrieved but not sent (dropped by dedup/limits) are NOT included.
+    # This list is used by Phase 5A citation-validity check.
+    sources_sent: list[str] = [hit["source_id"] for hit in hits]
+    if used_vision:
+        sources_sent += [img["source_id"] for img in image_sources]
 
     # ------------------------------------------------------------------
     # Step 5 – Pass 1: plan answer + optional calculations
@@ -365,6 +383,73 @@ def answer_question(
     )
 
     # ------------------------------------------------------------------
+    # Step 9b – Phase 5A: Run verification layer (before persistence)
+    # ------------------------------------------------------------------
+    verify_config = {
+        "VERIFY_MODE": config.get("VERIFY_MODE", "both"),
+        "VERIFY_MAX_CLAIMS_LLM": config.get("VERIFY_MAX_CLAIMS_LLM", 5),
+        "VERIFY_FAIL_POLICY": config.get("VERIFY_FAIL_POLICY", "flag"),
+        "VERIFY_LEXICAL_HIGH": config.get("VERIFY_LEXICAL_HIGH", 0.60),
+        "VERIFY_LEXICAL_LOW": config.get("VERIFY_LEXICAL_LOW", 0.35),
+    }
+
+    draft_for_verify: dict[str, Any] = {
+        "status": final_status,
+        "answer": final_answer,
+        "claims": final_claims,
+        "missing": final_missing,
+    }
+
+    verification_payload: dict[str, Any] = {}
+    try:
+        v_result = verify_answer(
+            draft=draft_for_verify,
+            sources_sent=sources_sent,
+            verified_calcs=verified_calcs,
+            rejected_calcs=rejected_calcs,
+            hits=hits,
+            ollama_client=ollama_client,
+            config=verify_config,
+        )
+        # Apply any policy-driven changes (e.g. claim removal rebuilds answer).
+        final_status = v_result.get("status", final_status)
+        final_answer = v_result.get("answer", final_answer)
+        final_missing = v_result.get("missing", final_missing)
+        verification_payload = {k: v for k, v in v_result.items()
+                                if k not in {"status", "answer", "missing"}}
+        # Rebuild citation objects if claims were removed.
+        if v_result.get("removed_claims"):
+            surviving_claims = [
+                c for c in final_claims
+                if not any(
+                    r.get("text", "")[:200] == c.get("text", "")[:200]
+                    for r in v_result["removed_claims"]
+                )
+            ]
+            cited_ids = _collect_cited_source_ids({"claims": surviving_claims})
+            citation_objects = _build_citation_objects(
+                cited_ids, hits, image_sources=image_sources if used_vision else None
+            )
+    except Exception as exc:
+        logger.exception("Verification layer raised an unexpected exception.")
+        fail_policy = str(config.get("VERIFY_FAIL_POLICY", "flag")).lower()
+        err = _error_result(
+            mode=verify_config["VERIFY_MODE"],
+            policy=fail_policy,
+            reason="verification_error",
+            draft_status=final_status,
+            draft_answer=final_answer,
+            draft_missing=final_missing,
+            draft_claims=final_claims,
+        )
+        if fail_policy == "refuse":
+            final_status = "insufficient_evidence"
+            final_answer = err["answer"]
+            final_missing = err["missing"]
+        verification_payload = {k: v for k, v in err.items()
+                                if k not in {"status", "answer", "missing"}}
+
+    # ------------------------------------------------------------------
     # Step 10 – Persist
     # ------------------------------------------------------------------
     t_persist_start = time.perf_counter()
@@ -374,19 +459,22 @@ def answer_question(
 
     conv_repo.insert_message(conversation_id, "user", question)
 
-    verification: dict[str, Any] = {
+    # Persist: keep 'answering' key for existing structure and add
+    # 'verification' key for Phase 5A payload (requirement 6).
+    stored_verification: dict[str, Any] = {
         "answering": {
             "status": final_status,
             "timings_ms": timings,
             "usage_pass1": usage_p1,
-        }
+        },
+        "verification": verification_payload,
     }
 
     assistant_msg_id = conv_repo.insert_message(
         conversation_id=conversation_id,
         role="assistant",
         content=final_answer,
-        verification=verification,
+        verification=stored_verification,
         used_vision=used_vision,
     )
 
@@ -419,6 +507,7 @@ def answer_question(
         "rejected_calculations": rejected_calcs,
         "used_vision": used_vision,
         "timings_ms": timings,
+        "verification": verification_payload,
     }
     if unverified_numbers:
         result["unverified_numbers"] = unverified_numbers

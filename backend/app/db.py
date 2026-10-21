@@ -17,10 +17,12 @@ def init_pool(config: dict[str, Any]) -> None:
     if _pool is not None:
         _pool.close()
     database_url = str(config.get("DATABASE_URL", ""))
+    pool_timeout = float(config.get("DB_POOL_TIMEOUT", 30.0))
     _pool = ConnectionPool(
         conninfo=database_url,
         min_size=0,
         max_size=5,
+        timeout=pool_timeout,
         open=False,
     )
 

@@ -94,6 +94,35 @@ def ask() -> tuple[Any, int]:
         if conv_repo.get_conversation(conversation_id) is None:
             raise NotFound("Conversation not found.")
 
+    # ---- Eval overrides (options field) -----------------------------------
+    # The "options" field is INERT unless ALLOW_EVAL_OVERRIDES=true.
+    # When the flag is false (the default), the field is parsed but ignored.
+    # Behaviour change introduced in Phase 5A: see project README decision log.
+    options: dict = body.get("options") or {}
+    eval_overrides: dict = {}
+    if options and current_app.config.get("ALLOW_EVAL_OVERRIDES", False):
+        if "verify_mode" in options:
+            vm = str(options["verify_mode"]).lower()
+            if vm not in {"off", "lexical", "llm", "both"}:
+                raise BadRequest("options.verify_mode must be off|lexical|llm|both.")
+            eval_overrides["VERIFY_MODE"] = vm
+        if "k" in options:
+            try:
+                eval_overrides["k"] = max(1, min(int(options["k"]), 12))
+            except (TypeError, ValueError) as exc:
+                raise BadRequest("options.k must be an integer.") from exc
+        if "vision" in options:
+            eval_overrides["VISION_ENABLED"] = bool(options["vision"])
+        if "think" in options:
+            eval_overrides["OLLAMA_THINK"] = bool(options["think"])
+        # Override k at request level too.
+        if "k" in eval_overrides:
+            k = eval_overrides.pop("k")
+    elif options:
+        logger.debug(
+            "options field present but ALLOW_EVAL_OVERRIDES=false; ignoring overrides"
+        )
+
     # ---- Call the orchestrator -------------------------------------------
     try:
         result = answer_question(
@@ -101,6 +130,7 @@ def ask() -> tuple[Any, int]:
             doc_ids=doc_ids,
             conversation_id=conversation_id,
             k=k,
+            eval_overrides=eval_overrides if eval_overrides else None,
         )
     except OllamaError as exc:
         msg = str(exc)

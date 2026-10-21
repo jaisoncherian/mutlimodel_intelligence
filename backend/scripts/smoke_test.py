@@ -12,7 +12,7 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import requests
 from dotenv import load_dotenv
@@ -406,7 +406,7 @@ def reprocess_document(base_url: str, accepted_map: dict[str, str], expected: di
     return True, f"PASS: reprocess kept page_count at {prior_count}"
 
 
-def cleanup_documents(base_url: str, accepted_map: dict[str, str], *, keep: bool) -> None:
+def cleanup_documents(base_url: str, accepted_map: dict[str, str], *, keep: bool = False) -> None:
     if keep or not accepted_map:
         return
     for filename, document_id in accepted_map.items():
@@ -453,40 +453,50 @@ def delete_documents(base_url: str, accepted_map: dict[str, str]) -> tuple[bool,
     return True, "PASS: accepted documents were deleted and files removed from Storage"
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     load_dotenv(ROOT / ".env")
     parser = argparse.ArgumentParser(description="Smoke test the live DocuLens AI backend.")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="Base URL for the running Flask app")
     parser.add_argument("--dir", default=str(DEFAULT_DIR), help="Directory containing fixture PDFs and expected.json")
     parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT_SECONDS, help="Overall timeout in seconds")
     parser.add_argument("--keep", action="store_true", help="Keep created documents and files after the smoke test")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     dir_path = Path(args.dir).expanduser().resolve()
     expected = load_expected(dir_path)
     accepted: dict[str, str] = {}
     failures = 0
 
-    checks = [
-        ("A. Multi-file upload", lambda: upload_documents(args.base_url, dir_path, args.timeout)),
-        ("B. Processing", lambda: (poll_documents(args.base_url, accepted, args.timeout) if accepted else (False, "SKIP: upload did not return accepted documents"))),
-        ("C. Page numbering", lambda: document_page_numbers(args.base_url, accepted, expected)),
-        ("D. OCR", lambda: scan_document(args.base_url, accepted, expected)),
-        ("E. Tables", lambda: check_table_values(args.base_url, accepted, expected)),
-        ("F. Column order", lambda: check_column_order(args.base_url, accepted, expected)),
-        ("G. Page image", lambda: check_page_image(args.base_url, accepted)),
-        ("H. Storage", lambda: check_storage(args.base_url, accepted)),
-        ("I. Reprocess", lambda: reprocess_document(args.base_url, accepted, expected)),
-        ("J. Delete", lambda: delete_documents(args.base_url, accepted)),
-    ]
-
     try:
+        try:
+            ok, accepted, reason = upload_documents(args.base_url, dir_path, args.timeout)
+            if reason.startswith("FAIL:"):
+                status = "FAIL"
+                failures += 1
+            elif reason.startswith("SKIP:"):
+                status = "SKIP"
+            else:
+                status = "PASS"
+            print_result("A. Multi-file upload", status, reason)
+        except Exception as exc:
+            failures += 1
+            print_result("A. Multi-file upload", "FAIL", f"unexpected exception: {exc}")
+
+        checks: list[tuple[str, Callable[[], tuple[bool, str]]]] = [
+            ("B. Processing", lambda: (poll_documents(args.base_url, accepted, args.timeout) if accepted else (False, "SKIP: upload did not return accepted documents"))),
+            ("C. Page numbering", lambda: document_page_numbers(args.base_url, accepted, expected)),
+            ("D. OCR", lambda: scan_document(args.base_url, accepted, expected)),
+            ("E. Tables", lambda: check_table_values(args.base_url, accepted, expected)),
+            ("F. Column order", lambda: check_column_order(args.base_url, accepted, expected)),
+            ("G. Page image", lambda: check_page_image(args.base_url, accepted)),
+            ("H. Storage", lambda: check_storage(args.base_url, accepted)),
+            ("I. Reprocess", lambda: reprocess_document(args.base_url, accepted, expected)),
+            ("J. Delete", lambda: delete_documents(args.base_url, accepted)),
+        ]
+
         for name, check in checks:
             try:
-                if name == "A. Multi-file upload":
-                    ok, accepted, reason = check()
-                else:
-                    ok, reason = check()
+                ok, reason = check()
                 if reason.startswith("FAIL:"):
                     status = "FAIL"
                     failures += 1
@@ -501,16 +511,17 @@ def main() -> int:
     finally:
         if not args.keep:
             try:
-                cleanup_documents(args.base_url, accepted)
+                cleanup_documents(args.base_url, accepted, keep=args.keep)
             except Exception:
                 pass
 
     return 1 if failures else 0
 
 
-@pytest.mark.integration
-def test_smoke_e2e():
+def run_smoke_e2e():
     """Live end-to-end smoke test integration runner."""
+    if os.getenv("RUN_INTEGRATION") != "1":
+        pytest.skip("Integration smoke test requires RUN_INTEGRATION=1")
     try:
         resp = requests.get(f"{DEFAULT_BASE_URL}/health", timeout=5)
         if resp.status_code != 200:
@@ -518,7 +529,7 @@ def test_smoke_e2e():
     except requests.exceptions.RequestException:
         pytest.skip(f"Live server not reachable at {DEFAULT_BASE_URL}")
 
-    exit_code = main()
+    exit_code = main([])
     assert exit_code == 0, "Smoke test failed"
 
 

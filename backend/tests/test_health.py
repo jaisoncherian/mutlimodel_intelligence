@@ -17,6 +17,7 @@ def test_health_reports_unavailable_database() -> None:
         {
             "TESTING": True,
             "DATABASE_URL": "postgresql://x:x@127.0.0.1:1/x",
+            "DB_POOL_TIMEOUT": 1.0,
         }
     ).test_client()
     response = client.get("/health")
