@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_standard" name="shell-type"/>
+<title>DocuLens AI — Document Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,300..500,0..1,0" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+    .analytics-dot-grid {
+      background-image: radial-gradient(rgba(99, 102, 241, 0.16) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .dark-dot-grid {
+      background-image: radial-gradient(rgba(129, 140, 248, 0.22) 1px, transparent 1px);
+      background-size: 18px 18px;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary-fixed": "#89f5e7",
+            "on-tertiary-fixed": "#360f00",
+            "error": "#ba1a1a",
+            "primary-fixed-dim": "#c3c0ff",
+            "on-secondary-fixed": "#00201d",
+            "surface": "#faf8ff",
+            "tertiary-fixed": "#ffdbcd",
+            "surface-container": "#eaedff",
+            "on-secondary-container": "#006f66",
+            "surface-container-low": "#f2f3ff",
+            "inverse-surface": "#121626",
+            "tertiary-container": "#8f3400",
+            "on-primary": "#ffffff",
+            "on-error-container": "#93000a",
+            "primary-fixed": "#e3dfff",
+            "inverse-primary": "#c3c0ff",
+            "surface-container-high": "#e3e7fc",
+            "surface-variant": "#dee2f6",
+            "outline-variant": "#c7c4d7",
+            "on-secondary": "#ffffff",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "surface-tint": "#5148d7",
+            "tertiary": "#692400",
+            "on-background": "#161b2a",
+            "surface-bright": "#faf8ff",
+            "secondary-container": "#86f2e4",
+            "outline": "#777586",
+            "on-surface": "#161b2a",
+            "primary": "#2a14b4",
+            "tertiary-fixed-dim": "#ffb597",
+            "on-primary-fixed": "#100069",
+            "background": "#faf8ff",
+            "inverse-on-surface": "#eef0ff",
+            "secondary": "#006a61",
+            "surface-dim": "#d5d9ee",
+            "error-container": "#ffdad6",
+            "on-primary-fixed-variant": "#372abf",
+            "primary-container": "#4338ca",
+            "secondary-fixed-dim": "#6bd8cb",
+            "surface-container-highest": "#dee2f6",
+            "on-tertiary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-container": "#c1beff",
+            "on-surface-variant": "#464554",
+            "on-error": "#ffffff",
+            "on-tertiary-container": "#ffb393",
+            "on-secondary-fixed-variant": "#005049"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.5rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-2xl": "4rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem",
+            "space-sm": "0.5rem",
+            "gutter": "1.5rem",
+            "gutter-mobile": "1rem",
+            "margin-mobile": "1.25rem",
+            "space-3xl": "6rem",
+            "margin": "3rem"
+          },
+          fontFamily: {
+            "mono-sm": ["JetBrains Mono"],
+            "headline-lg": ["Inter"],
+            "mono-code": ["JetBrains Mono"],
+            "display-hero-mobile": ["Inter"],
+            "body-md": ["Inter"],
+            "mono-lg": ["JetBrains Mono"],
+            "headline-md": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "headline-sm": ["Inter"],
+            "body-sm": ["Inter"],
+            "display-hero": ["Inter"],
+            "body-lg": ["Inter"]
+          },
+          fontSize: {
+            "mono-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "mono-code": ["11px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "400" }],
+            "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-md": ["15px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "mono-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-sm": ["13px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "display-hero": ["54px", { "lineHeight": "62px", "letterSpacing": "-0.035em", "fontWeight": "700" }],
+            "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "-0.005em", "fontWeight": "400" }]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-[#f8f9fd] font-body-md text-body-md text-on-surface antialiased selection:bg-primary-container selection:text-white">
+<!-- TOP NAVIGATION -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-surface-container-high/80 transition-all">
+<div class="h-20 max-w-[1140px] mx-auto px-gutter flex items-center justify-between">
+<!-- Logo Mark -->
+<a class="flex items-center gap-3 group" data-path="overview" href="#">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-primary-container flex items-center justify-center text-on-primary shadow-sm shadow-primary/20 ring-1 ring-primary-container/30 transition-transform group-hover:scale-[1.03]">
+<span class="material-symbols-outlined text-[20px]">document_scanner</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-bold">DocuLens AI</span>
+</a>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-1 bg-surface-container-low/70 p-1.5 rounded-xl border border-surface-container-high/60" data-active-classes="bg-surface-container-high text-on-surface font-headline-sm rounded-lg px-space-md py-space-xs">
+<a class="font-body-md text-body-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-white transition-all px-3.5 py-1.5 rounded-lg" data-path="how-it-works" href="#how-it-works">How it works</a>
+<a class="font-body-md text-body-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-white transition-all px-3.5 py-1.5 rounded-lg" data-path="features" href="#features">Features</a>
+<a class="font-body-md text-body-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-white transition-all px-3.5 py-1.5 rounded-lg" data-path="tech" href="#tech">Tech</a>
+</nav>
+<!-- Right Actions: GitHub link & Try it button -->
+<div class="flex items-center gap-4">
+<a class="text-body-md text-on-surface-variant hover:text-on-surface font-medium transition-colors px-2 py-1" data-path="github-repository" href="#">GitHub</a>
+<a class="h-10 px-5 rounded-xl bg-primary-container text-on-primary font-headline-sm text-body-sm inline-flex items-center justify-center hover:bg-primary transition-all duration-150 shadow-sm shadow-primary-container/25 hover:shadow-md" data-path="try-it" href="#try-it">Try it</a>
+</div>
+</div>
+</header>
+<!-- MAIN WRAPPER -->
+<main class="w-full pt-20 bg-[#f8f9fd] min-h-screen">
+<div class="flex flex-col w-full text-on-surface">
+<!-- HERO SECTION -->
+<section class="w-full relative overflow-hidden py-16 lg:py-24 border-b border-surface-container-high/60">
+<!-- Ambient platform glowing gradients -->
+<div class="absolute top-0 right-1/4 w-[500px] h-[500px] bg-primary-container/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<div class="absolute bottom-10 left-10 w-[420px] h-[420px] bg-secondary/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<div class="max-w-[1140px] mx-auto px-gutter grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+<!-- Left Column -->
+<div class="lg:col-span-5 flex flex-col items-start">
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-surface-container-high shadow-xs mb-6">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-mono-sm text-[11px] font-semibold tracking-wider text-primary-container uppercase">
+                Multimodal document intelligence
+              </span>
+</div>
+<h1 class="font-display-hero text-headline-lg lg:text-display-hero text-on-surface tracking-tight mb-5">
+              Ask your documents. See the proof.
+            </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-8 leading-relaxed">
+              Upload reports, tables, charts and scanned pages. Get answers that point to the exact page they came from, with automated checks on every answer.
+            </p>
+<div class="flex flex-wrap items-center gap-3.5 w-full sm:w-auto">
+<a class="h-12 px-7 rounded-xl bg-primary-container text-on-primary font-headline-sm text-body-md inline-flex items-center justify-center hover:bg-primary transition-all duration-150 shadow-md shadow-primary-container/20 hover:scale-[1.01]" href="#try-it">
+                Try it
+              </a>
+<a class="h-12 px-7 rounded-xl bg-white text-on-surface font-headline-sm text-body-md inline-flex items-center justify-center border border-surface-container-high hover:border-outline-variant hover:bg-surface-container-low transition-all duration-150 shadow-xs" href="#demo-video">
+                Watch the demo
+              </a>
+</div>
+</div>
+<!-- Right Column: Outcrowd-styled Framed Analytics Workspace Mockup -->
+<div class="lg:col-span-7">
+<div class="relative group">
+<!-- Glow backdrop effect -->
+<div class="absolute -inset-1 bg-gradient-to-r from-primary-container/20 to-secondary/20 rounded-2xl blur-xl opacity-75 group-hover:opacity-100 transition duration-500"></div>
+<!-- Main Frame Container -->
+<div class="relative w-full rounded-2xl bg-[#0f1422] border border-[#232b45] shadow-2xl overflow-hidden flex flex-col text-slate-200">
+<!-- Window Top Header Bar -->
+<div class="h-11 bg-[#151b2e] border-b border-[#232b45] px-4 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-[#ff5f56]/80 inline-block"></span>
+<span class="w-3 h-3 rounded-full bg-[#ffbd2e]/80 inline-block"></span>
+<span class="w-3 h-3 rounded-full bg-[#27c93f]/80 inline-block"></span>
+<div class="h-3.5 w-[1px] bg-[#232b45] mx-1"></div>
+<span class="font-mono-code text-[11px] text-slate-400">workspace / session-q3-audit</span>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#1c243c] border border-[#2c3756]">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+<span class="font-mono-code text-[11px] text-emerald-400 font-medium">pipeline-idle</span>
+</div>
+</div>
+<!-- App Workspace Panels (Tri-pane Analytics Feel) -->
+<div class="grid grid-cols-12 min-h-[390px] divide-x divide-[#232b45] bg-[#0c101d]">
+<!-- Left Pane: Corpus Sidebar -->
+<div class="col-span-3 bg-[#111628]/70 p-3 flex flex-col gap-1.5">
+<div class="flex items-center justify-between px-2 py-1">
+<span class="font-mono-code text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Corpus</span>
+<span class="text-[10px] font-mono-code text-indigo-400 bg-indigo-500/10 px-1.5 rounded">3 files</span>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-2 rounded-lg bg-indigo-600/15 border border-indigo-500/30 text-indigo-200">
+<span class="material-symbols-outlined text-[16px] text-indigo-400">description</span>
+<span class="font-mono-code text-[11px] truncate font-medium">text_table.pdf</span>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-2 rounded-lg text-slate-400 hover:bg-[#182038] hover:text-slate-200 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[16px]">view_column</span>
+<span class="font-mono-code text-[11px] truncate">two_column.pdf</span>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-2 rounded-lg text-slate-400 hover:bg-[#182038] hover:text-slate-200 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[16px]">scanner</span>
+<span class="font-mono-code text-[11px] truncate">scan.pdf</span>
+</div>
+<div class="mt-auto p-2 rounded-lg bg-[#151c30] border border-[#232c49] text-[10px] font-mono-code text-slate-400 flex items-center justify-between">
+<span>Index: AST + Embed</span>
+<span class="text-emerald-400">Synced</span>
+</div>
+</div>
+<!-- Center Pane: Conversational Inference Stream -->
+<div class="col-span-5 p-4 flex flex-col justify-between bg-[#0e1322] relative">
+<div class="flex flex-col gap-3.5">
+<!-- User Question Pill -->
+<div class="flex justify-end">
+<div class="bg-[#1e2744] text-slate-100 border border-[#2e3b63] px-3.5 py-2 rounded-xl rounded-tr-xs shadow-sm max-w-[90%]">
+<p class="font-body-sm text-[12px] leading-tight font-medium">What was the revenue growth?</p>
+</div>
+</div>
+<!-- DocuLens Inference Card -->
+<div class="bg-[#141a2e] border border-[#283354] p-3.5 rounded-xl flex flex-col gap-2.5 shadow-sm">
+<div class="flex items-center justify-between border-b border-[#222b47] pb-2">
+<div class="flex items-center gap-1.5">
+<div class="w-5 h-5 rounded bg-indigo-600/30 flex items-center justify-center text-indigo-400">
+<span class="material-symbols-outlined text-[14px]">smart_toy</span>
+</div>
+<span class="font-mono-code text-[11px] text-indigo-300 font-medium">DocuLens Engine</span>
+</div>
+<span class="font-mono-code text-[10px] text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full font-medium">Checked</span>
+</div>
+<p class="font-body-sm text-[12px] text-slate-200 leading-relaxed">
+                          Revenue increased by <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono-code px-1.5 py-0.2 rounded font-medium">14.2%</span> year-over-year, moving from $18.3M to $20.9M in Q3 
+                          <span class="inline-flex items-center text-indigo-200 bg-indigo-600/40 border border-indigo-500/40 px-1.5 py-0.2 rounded font-mono-code text-[10px] ml-1 font-semibold cursor-pointer">[S1]</span>.
+                        </p>
+<!-- Code check node status -->
+<div class="pt-2 border-t border-[#222b47] flex items-center gap-1.5 text-slate-400">
+<span class="material-symbols-outlined text-[14px] text-emerald-400">check_circle</span>
+<span class="font-mono-code text-[10px] text-slate-300">Deterministic code check: Math matched page 4.</span>
+</div>
+</div>
+</div>
+<!-- Input Bar -->
+<div class="mt-4 h-9 bg-[#151c30] border border-[#263152] rounded-lg px-3 flex items-center justify-between text-slate-400 shadow-inner">
+<span class="font-body-sm text-[11px] text-slate-400">Ask about text_table.pdf...</span>
+<div class="w-5 h-5 rounded bg-indigo-600 text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[13px]">arrow_upward</span>
+</div>
+</div>
+</div>
+<!-- Right Pane: Evidence & Document Inspector -->
+<div class="col-span-4 bg-[#111628]/90 p-3 flex flex-col gap-2.5">
+<div class="flex items-center justify-between pb-1 border-b border-[#232b45]">
+<span class="font-mono-code text-[11px] text-slate-400">Source: Page 4</span>
+<span class="font-mono-code text-[10px] text-indigo-300 bg-indigo-600/30 border border-indigo-500/40 px-2 py-0.5 rounded-full font-medium">[S1] Focus</span>
+</div>
+<div class="flex-1 bg-[#161c32] border border-[#273252] p-2.5 rounded-xl shadow-inner flex flex-col gap-2 text-[10px]">
+<div class="font-mono-code text-slate-400 pb-1 text-[10px] flex items-center justify-between">
+<span>Table 3.1: Financial Performance</span>
+<span class="material-symbols-outlined text-[12px] text-slate-500">open_in_full</span>
+</div>
+<div class="grid grid-cols-3 gap-1 font-mono-code text-slate-400 font-medium py-1 bg-[#1e2642] px-1.5 rounded text-[10px]">
+<span>Period</span>
+<span>Rev</span>
+<span>Margin</span>
+</div>
+<div class="grid grid-cols-3 gap-1 font-mono-code py-1 px-1.5 text-slate-400">
+<span>Q2</span>
+<span>$18.3M</span>
+<span>22.1%</span>
+</div>
+<!-- Highlighted evidence row with pulse highlight -->
+<div class="grid grid-cols-3 gap-1 font-mono-code py-1.5 px-1.5 bg-indigo-600/25 border border-indigo-500/40 text-emerald-300 rounded font-semibold">
+<span>Q3</span>
+<span>$20.9M</span>
+<span>24.8%</span>
+</div>
+<div class="grid grid-cols-3 gap-1 font-mono-code py-1 px-1.5 text-slate-400">
+<span>Q4 (est)</span>
+<span>$22.0M</span>
+<span>25.0%</span>
+</div>
+<!-- Visual Bounding Box coordinate tag -->
+<div class="mt-auto pt-2 bg-indigo-950/50 border border-indigo-800/40 p-2 rounded-lg text-indigo-200 text-[9px] font-mono-code flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[13px] text-indigo-400">crop_free</span>
+<span>Bounding Box: [x:120, y:342, w:410, h:65]</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- HOW IT WORKS SECTION -->
+<section class="w-full bg-white py-20 lg:py-28 border-b border-surface-container-high/60 relative" id="how-it-works">
+<div class="max-w-[1140px] mx-auto px-gutter flex flex-col">
+<div class="max-w-xl mb-14">
+<span class="font-mono-sm text-[11px] font-semibold uppercase tracking-wider text-secondary bg-secondary/10 px-3 py-1 rounded-full">
+              Architecture
+            </span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mt-3 mb-3">
+              How it works
+            </h2>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              An end-to-end local document processing pipeline engineered for traceability and verifiability.
+            </p>
+</div>
+<!-- Five-Step Connected Pipeline Cards (Analytics progressive flow) -->
+<div class="grid grid-cols-1 md:grid-cols-5 gap-4 relative">
+<!-- Step 1: Upload -->
+<div class="group relative bg-[#f9fafc] hover:bg-white p-6 rounded-2xl border border-surface-container-high/80 hover:border-primary-container/40 hover:shadow-xl hover:shadow-primary-container/5 transition-all duration-300 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-5">
+<div class="w-11 h-11 rounded-xl bg-white group-hover:bg-primary-container group-hover:text-white flex items-center justify-center text-primary-container border border-surface-container-high transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[22px]">upload_file</span>
+</div>
+<span class="font-mono-code text-[12px] font-bold text-outline-variant group-hover:text-primary-container transition-colors">01</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 font-semibold">Upload</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Add one or many PDFs.
+                </p>
+</div>
+<div class="hidden md:flex items-center gap-1 mt-6 text-outline-variant group-hover:text-primary-container transition-colors text-xs font-mono-code font-medium">
+<span>Next</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</div>
+<!-- Step 2: Read -->
+<div class="group relative bg-[#f9fafc] hover:bg-white p-6 rounded-2xl border border-surface-container-high/80 hover:border-primary-container/40 hover:shadow-xl hover:shadow-primary-container/5 transition-all duration-300 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-5">
+<div class="w-11 h-11 rounded-xl bg-white group-hover:bg-primary-container group-hover:text-white flex items-center justify-center text-primary-container border border-surface-container-high transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[22px]">description</span>
+</div>
+<span class="font-mono-code text-[12px] font-bold text-outline-variant group-hover:text-primary-container transition-colors">02</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 font-semibold">Read</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Text, tables and scanned pages are extracted and numbered by page.
+                </p>
+</div>
+<div class="hidden md:flex items-center gap-1 mt-6 text-outline-variant group-hover:text-primary-container transition-colors text-xs font-mono-code font-medium">
+<span>Next</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</div>
+<!-- Step 3: Retrieve -->
+<div class="group relative bg-[#f9fafc] hover:bg-white p-6 rounded-2xl border border-surface-container-high/80 hover:border-primary-container/40 hover:shadow-xl hover:shadow-primary-container/5 transition-all duration-300 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-5">
+<div class="w-11 h-11 rounded-xl bg-white group-hover:bg-primary-container group-hover:text-white flex items-center justify-center text-primary-container border border-surface-container-high transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[22px]">search</span>
+</div>
+<span class="font-mono-code text-[12px] font-bold text-outline-variant group-hover:text-primary-container transition-colors">03</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 font-semibold">Retrieve</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Meaning-based and keyword search find the relevant evidence.
+                </p>
+</div>
+<div class="hidden md:flex items-center gap-1 mt-6 text-outline-variant group-hover:text-primary-container transition-colors text-xs font-mono-code font-medium">
+<span>Next</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</div>
+<!-- Step 4: Answer -->
+<div class="group relative bg-[#f9fafc] hover:bg-white p-6 rounded-2xl border border-surface-container-high/80 hover:border-primary-container/40 hover:shadow-xl hover:shadow-primary-container/5 transition-all duration-300 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-5">
+<div class="w-11 h-11 rounded-xl bg-white group-hover:bg-primary-container group-hover:text-white flex items-center justify-center text-primary-container border border-surface-container-high transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[22px]">chat_bubble_outline</span>
+</div>
+<span class="font-mono-code text-[12px] font-bold text-outline-variant group-hover:text-primary-container transition-colors">04</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 font-semibold">Answer</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  A local language model writes the answer using only that evidence, and reads page images when a chart is needed.
+                </p>
+</div>
+<div class="hidden md:flex items-center gap-1 mt-6 text-outline-variant group-hover:text-primary-container transition-colors text-xs font-mono-code font-medium">
+<span>Next</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</div>
+<!-- Step 5: Check -->
+<div class="group relative bg-[#f9fafc] hover:bg-white p-6 rounded-2xl border border-surface-container-high/80 hover:border-secondary/40 hover:shadow-xl hover:shadow-secondary/10 transition-all duration-300 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-5">
+<div class="w-11 h-11 rounded-xl bg-white group-hover:bg-secondary group-hover:text-white flex items-center justify-center text-secondary border border-surface-container-high transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[22px]">check_circle</span>
+</div>
+<span class="font-mono-code text-[12px] font-bold text-outline-variant group-hover:text-secondary transition-colors">05</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 font-semibold">Check</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Citations and numbers are checked automatically, and calculations run in Python.
+                </p>
+</div>
+<div class="hidden md:flex items-center gap-1 mt-6 text-secondary font-mono-code text-xs font-semibold">
+<span>Completed</span>
+<span class="material-symbols-outlined text-[16px]">done_all</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- WHAT MAKES IT DIFFERENT SECTION -->
+<section class="w-full bg-[#f8f9fd] py-20 lg:py-28 border-b border-surface-container-high/60" id="features">
+<div class="max-w-[1140px] mx-auto px-gutter">
+<div class="max-w-xl mb-14">
+<span class="font-mono-sm text-[11px] font-semibold uppercase tracking-wider text-primary-container bg-primary-container/10 px-3 py-1 rounded-full">
+              Design Principles
+            </span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mt-3">
+              What makes it different
+            </h2>
+</div>
+<!-- 2x2 Feature Grid Inspired by Outcrowd Analytics Platforms -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Card 1 -->
+<div class="bg-white p-8 rounded-2xl border border-surface-container-high/80 hover:border-primary-container/40 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-6">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[24px]">find_in_page</span>
+</div>
+<span class="font-mono-code text-[11px] font-medium bg-surface-container-low border border-surface-container-high text-on-surface-variant px-3 py-1 rounded-full">
+                    citation_link
+                  </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 font-semibold">
+                  Every answer shows its page
+                </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                  citations link to the exact page and section.
+                </p>
+</div>
+<div class="mt-8 pt-4 border-t border-surface-container-high/60 flex items-center gap-2">
+<span class="material-symbols-outlined text-[17px] text-primary-container">pin_drop</span>
+<span class="font-mono-code text-[12px] text-on-surface-variant">Exact source mapping enabled</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white p-8 rounded-2xl border border-surface-container-high/80 hover:border-primary-container/40 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-6">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[24px]">terminal</span>
+</div>
+<span class="font-mono-code text-[11px] font-medium bg-surface-container-low border border-surface-container-high text-on-surface-variant px-3 py-1 rounded-full">
+                    python_runtime
+                  </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 font-semibold">
+                  Math done by code
+                </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                  the language model never computes numbers; Python does.
+                </p>
+</div>
+<div class="mt-8 pt-4 border-t border-surface-container-high/60 flex items-center gap-2">
+<span class="material-symbols-outlined text-[17px] text-secondary">calculate</span>
+<span class="font-mono-code text-[12px] text-on-surface-variant">calc: exec(ast_parser_node)</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-white p-8 rounded-2xl border border-surface-container-high/80 hover:border-primary-container/40 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-6">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[24px]">pie_chart</span>
+</div>
+<span class="font-mono-code text-[11px] font-medium bg-surface-container-low border border-surface-container-high text-on-surface-variant px-3 py-1 rounded-full">
+                    vision_vlm
+                  </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 font-semibold">
+                  Charts read as images
+                </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                  visual content is analyzed from the page image.
+                </p>
+</div>
+<div class="mt-8 pt-4 border-t border-surface-container-high/60 flex items-center gap-2">
+<span class="material-symbols-outlined text-[17px] text-primary-container">image_search</span>
+<span class="font-mono-code text-[12px] text-on-surface-variant">Raster pixel analysis active</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-white p-8 rounded-2xl border border-surface-container-high/80 hover:border-primary-container/40 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-6">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[24px]">format_image_left</span>
+</div>
+<span class="font-mono-code text-[11px] font-medium bg-surface-container-low border border-surface-container-high text-on-surface-variant px-3 py-1 rounded-full">
+                    null_safety
+                  </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 font-semibold">
+                  Honest about uncertainty
+                </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                  exact checks and heuristic signals are shown separately, and unsupported questions get "not enough evidence".
+                </p>
+</div>
+<div class="mt-8 pt-4 border-t border-surface-container-high/60 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[17px] text-tertiary">info</span>
+<span class="font-mono-code text-[12px] text-on-surface-variant">Signals isolated</span>
+</div>
+<span class="font-mono-code text-[10px] bg-surface-container-high px-2.5 py-1 rounded-full text-on-surface-variant font-medium">strict-fallback</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- TRY IT SECTION -->
+<section class="w-full bg-white py-20 lg:py-28 border-b border-surface-container-high/60" id="try-it">
+<div class="max-w-[1140px] mx-auto px-gutter">
+<!-- Wide Elevated Action Card -->
+<div class="bg-[#f8f9fe] border border-surface-container-high rounded-3xl p-8 lg:p-12 shadow-sm">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<!-- Left Column: Instructions and Local Execution Steps -->
+<div class="lg:col-span-6 flex flex-col">
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold mb-3">
+                  Run it on your own machine
+                </h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8 leading-relaxed">
+                  DocuLens AI runs locally, so your documents never leave your computer.
+                </p>
+<!-- Three numbered steps -->
+<div class="flex flex-col gap-5 mb-8">
+<div class="flex items-center gap-3.5">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-mono-code text-[12px] font-bold shadow-xs">
+                      1
+                    </div>
+<span class="font-body-md text-body-md text-on-surface font-medium">
+                      Clone the repository
+                    </span>
+</div>
+<div class="flex items-center gap-3.5">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-mono-code text-[12px] font-bold shadow-xs">
+                      2
+                    </div>
+<span class="font-body-md text-body-md text-on-surface font-medium">
+                      Follow the setup guide in the README
+                    </span>
+</div>
+<div class="flex items-center gap-3.5">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-mono-code text-[12px] font-bold shadow-xs">
+                      3
+                    </div>
+<span class="font-body-md text-body-md text-on-surface font-medium">
+                      Open the app in your browser
+                    </span>
+</div>
+</div>
+<!-- Action buttons -->
+<div class="flex flex-wrap items-center gap-3.5">
+<a class="h-12 px-6 rounded-xl bg-white text-on-surface font-headline-sm text-body-md inline-flex items-center gap-2 border border-surface-container-high hover:border-outline-variant hover:bg-surface-container-low transition-all duration-150 shadow-xs" data-path="github-repository" href="#">
+<span class="material-symbols-outlined text-[20px]">code</span>
+<span>View on GitHub</span>
+</a>
+<a class="h-12 px-7 rounded-xl bg-primary-container text-on-primary font-headline-sm text-body-md inline-flex items-center hover:bg-primary transition-all duration-150 shadow-sm shadow-primary-container/20" href="#">
+                    Open the app
+                  </a>
+</div>
+</div>
+<!-- Right Column: Outcrowd styled 16:9 Video Demo Player Card -->
+<div class="lg:col-span-6" id="demo-video">
+<div class="aspect-video bg-[#0d1220] rounded-2xl border border-[#222a44] flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer shadow-xl transition-all hover:border-indigo-500/50">
+<!-- Subtle dark analytics dot grid inside player -->
+<div class="absolute inset-0 dark-dot-grid opacity-35"></div>
+<!-- Ambient light glow in player -->
+<div class="absolute w-48 h-48 bg-primary-container/20 rounded-full blur-2xl pointer-events-none"></div>
+<!-- Top badge overlay -->
+<div class="absolute top-4 left-4 bg-white/10 backdrop-blur-md border border-white/15 px-3 py-1 rounded-full font-mono-code text-[11px] text-white">
+                    03:00 / Quick walkthrough
+                  </div>
+<!-- Play Button with subtle ripple aura -->
+<div class="relative z-10 flex flex-col items-center gap-3">
+<div class="h-16 w-16 rounded-full bg-white text-primary-container flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-primary-fixed transition-all duration-300">
+<span class="material-symbols-outlined text-[32px] ml-1">play_arrow</span>
+</div>
+<span class="font-body-sm text-[13px] font-medium text-slate-200 group-hover:text-white transition-colors">
+                      Watch the 3-minute demo
+                    </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- BUILT WITH SECTION -->
+<section class="w-full bg-[#f8f9fd] py-16" id="tech">
+<div class="max-w-[1140px] mx-auto px-gutter flex flex-col items-start">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-[20px] text-primary-container">layers</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+              Built with
+            </h2>
+</div>
+<!-- Modern Outcrowd styled tech pill tags with crisp borders -->
+<div class="flex flex-wrap gap-2.5">
+<span class="font-mono-sm text-[12px] px-4 py-2 bg-white rounded-xl text-on-surface border border-surface-container-high/90 shadow-xs hover:border-primary-container/40 transition-colors">
+              React
+            </span>
+<span class="font-mono-sm text-[12px] px-4 py-2 bg-white rounded-xl text-on-surface border border-surface-container-high/90 shadow-xs hover:border-primary-container/40 transition-colors">
+              TypeScript
+            </span>
+<span class="font-mono-sm text-[12px] px-4 py-2 bg-white rounded-xl text-on-surface border border-surface-container-high/90 shadow-xs hover:border-primary-container/40 transition-colors">
+              Tailwind CSS
+            </span>
+<span class="font-mono-sm text-[12px] px-4 py-2 bg-white rounded-xl text-on-surface border border-surface-container-high/90 shadow-xs hover:border-primary-container/40 transition-colors">
+              Flask
+            </span>
+<span class="font-mono-sm text-[12px] px-4 py-2 bg-white rounded-xl text-on-surface border border-surface-container-high/90 shadow-xs hover:border-primary-container/40 transition-colors">
+              PostgreSQL
+            </span>
+<span class="font-mono-sm text-[12px] px-4 py-2 bg-white rounded-xl text-on-surface border border-surface-container-high/90 shadow-xs hover:border-primary-container/40 transition-colors">
+              pgvector
+            </span>
+<span class="font-mono-sm text-[12px] px-4 py-2 bg-white rounded-xl text-on-surface border border-surface-container-high/90 shadow-xs hover:border-primary-container/40 transition-colors">
+              Ollama
+            </span>
+<span class="font-mono-sm text-[12px] px-4 py-2 bg-white rounded-xl text-on-surface border border-surface-container-high/90 shadow-xs hover:border-primary-container/40 transition-colors">
+              Tesseract
+            </span>
+<span class="font-mono-sm text-[12px] px-4 py-2 bg-white rounded-xl text-on-surface border border-surface-container-high/90 shadow-xs hover:border-primary-container/40 transition-colors">
+              PyMuPDF
+            </span>
+</div>
+</div>
+</section>
+<!-- PORTFOLIO FOOTER SECTION -->
+<footer class="w-full bg-white border-t border-surface-container-high/80 py-12">
+<div class="max-w-[1140px] mx-auto px-gutter flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+<div class="flex flex-col gap-1.5 max-w-xl">
+<span class="font-body-md text-body-md text-on-surface font-semibold tracking-tight">
+              DocuLens AI, a portfolio project by [YOUR NAME]
+            </span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Built for learning. Answers are checked automatically, but always open the source to confirm.
+            </p>
+</div>
+<!-- Portfolio Links -->
+<div class="flex items-center gap-6">
+<a class="font-body-sm text-body-sm font-medium text-primary-container hover:text-primary transition-colors inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-surface-container-low" data-path="github-repository" href="#">
+<span class="material-symbols-outlined text-[18px]">code</span>
+<span>GitHub</span>
+</a>
+<a class="font-body-sm text-body-sm font-medium text-primary-container hover:text-primary transition-colors inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-surface-container-low" href="#">
+<span class="material-symbols-outlined text-[18px]">link</span>
+<span>LinkedIn</span>
+</a>
+</div>
+</div>
+</footer>
+</div>
+</main>
+<!-- BOTTOM SITE FOOTER -->
+<footer class="w-full bg-[#f8f9fd] border-t border-surface-container-high/60">
+<div class="max-w-[1140px] mx-auto px-gutter py-12">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center text-on-primary shadow-xs">
+<span class="material-symbols-outlined text-[18px]">document_scanner</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">DocuLens AI</span>
+</div>
+<nav class="flex flex-wrap items-center gap-6" data-active-classes="text-primary font-headline-sm">
+<a aria-current="page" class="transition-colors text-primary font-headline-sm text-body-sm" data-path="overview" href="#">Overview</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="how-it-works" href="#how-it-works">How it works</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="features" href="#features">Features</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="tech" href="#tech">Tech</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="github-repository" href="#">GitHub</a>
+</nav>
+</div>
+<div class="mt-8 pt-8 border-t border-surface-container-high/70 flex flex-col sm:flex-row items-center justify-between gap-4">
+<p class="font-mono-code text-[11px] text-on-surface-variant">© 2025 DocuLens AI Portfolio. High-fidelity algorithmic parsing engine.</p>
+<div class="flex items-center gap-2 font-mono-code text-[11px] text-on-surface-variant bg-white px-3 py-1 rounded-full border border-surface-container-high">
+<span class="inline-block w-2 h-2 rounded-full bg-secondary"></span>
+<span>pipeline-ready</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

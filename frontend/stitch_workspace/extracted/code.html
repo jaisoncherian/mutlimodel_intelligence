@@ -1,0 +1,570 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, initial-scale=1.0">
+  <title>RetrievIQ - Document Q&amp;A with Citations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            page: '#F6F7FB',
+            bordercol: '#E3E6EF',
+            primary: '#4338CA',
+            primaryHover: '#3730A3',
+            textPrimary: '#1F2433',
+            textSecondary: '#4B5368',
+            chipCitationBg: '#EEF2FF',
+            chipCitationText: '#3730A3',
+            chipReadyBg: '#DCFCE7',
+            chipReadyText: '#14532D',
+            chipProcessingBg: '#E0E7FF',
+            chipProcessingText: '#312E81',
+            chipCautionBg: '#FEF3C7',
+            chipCautionText: '#78350F',
+            chipNeutralBg: '#EEF0F6',
+            chipNeutralText: '#434A5E',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F6F7FB;
+      color: #1F2433;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #E3E6EF;
+      border-radius: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #CBD5E1;
+    }
+    .highlight-row {
+      background-color: #EEF2FF;
+      border-left: 3px solid #4338CA;
+    }
+  </style>
+</head>
+<body class="w-[1440px] h-[900px] max-h-[900px] overflow-hidden flex flex-col bg-[#F6F7FB]">
+
+  <!-- Main 3-Column Container -->
+  <div class="flex flex-1 h-[900px] w-[1440px] overflow-hidden">
+
+    <!-- ========================================== -->
+    <!-- COLUMN 1: LEFT SIDEBAR (300px wide, white) -->
+    <!-- ========================================== -->
+    <aside class="w-[300px] min-w-[300px] max-w-[300px] h-full bg-white border-r border-[#E3E6EF] flex flex-col justify-between select-none z-10">
+      
+      <!-- Top Scrollable Area -->
+      <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-4">
+        
+        <!-- Logo and DocuLens AI with collapse button -->
+        <div class="flex items-center justify-between pb-1">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-[#4338CA] flex items-center justify-center text-white shadow-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+              </svg>
+            </div>
+            <div>
+              <span class="font-bold text-base tracking-tight text-[#1F2433]">RetrievIQ</span>
+            </div>
+          </div>
+          <!-- Collapse button -->
+          <button class="p-1.5 rounded-md text-[#4B5368] hover:bg-[#EEF0F6] hover:text-[#1F2433] transition-colors" title="Collapse sidebar">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Full-width indigo "New chat" button -->
+        <button class="w-full h-[44px] bg-[#4338CA] hover:bg-[#3730A3] text-white font-medium text-sm rounded-[8px] flex items-center justify-center space-x-2 shadow-sm transition-all duration-150">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+          </svg>
+          <span class="">New chat</span>
+        </button>
+
+        <!-- DOCUMENTS SECTION -->
+        <div class="space-y-2.5 pt-1">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-semibold tracking-wider text-[#4B5368] uppercase font-sans">DOCUMENTS</span>
+          </div>
+
+          <!-- Dashed-border upload box -->
+          <div class="border border-dashed border-[#CBD5E1] hover:border-[#4338CA] rounded-[12px] p-3 text-center bg-[#FAFAFC] hover:bg-[#F5F7FF] transition-all cursor-pointer group">
+            <div class="flex justify-center mb-1 text-[#4338CA]">
+              <svg class="w-5 h-5 text-[#4338CA] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+              </svg>
+            </div>
+            <p class="text-xs font-medium text-[#1F2433]">Drop PDFs here or browse</p>
+            <p class="text-[10px] text-[#4B5368] mt-0.5">PDF only, up to 25 MB each</p>
+          </div>
+
+          <!-- Searching in 2 of 4 documents + Select all link -->
+          <div class="flex items-center justify-between text-xs pt-1">
+            <span class="text-[#4B5368] text-[11px]">Searching in 2 of 4 documents</span>
+            <button class="text-[#4338CA] hover:text-[#3730A3] font-medium text-[11px] hover:underline">Select all</button>
+          </div>
+
+          <!-- Document List -->
+          <div class="space-y-1.5">
+            
+            <!-- Doc 1: text_table.pdf (5 pages, Ready, checked) -->
+            <div class="flex items-center justify-between p-2 rounded-[8px] border border-[#E3E6EF] bg-white hover:bg-[#F9FAFC] transition-colors">
+              <div class="flex items-center space-x-2.5 min-w-0">
+                <input type="checkbox" checked="" class="w-4 h-4 text-[#4338CA] rounded border-[#CBD5E1] focus:ring-[#4338CA] accent-[#4338CA] cursor-pointer">
+                <div class="truncate">
+                  <p class="font-mono text-xs font-semibold text-[#1F2433] truncate">text_table.pdf</p>
+                  <p class="text-[10px] text-[#4B5368]">5 pages</p>
+                </div>
+              </div>
+              <span class="font-sans px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#DCFCE7] text-[#14532D] shrink-0">Ready</span>
+            </div>
+
+            <!-- Doc 2: two_column.pdf (15 pages, Ready, checked) -->
+            <div class="flex items-center justify-between p-2 rounded-[8px] border border-[#E3E6EF] bg-white hover:bg-[#F9FAFC] transition-colors">
+              <div class="flex items-center space-x-2.5 min-w-0">
+                <input type="checkbox" checked="" class="w-4 h-4 text-[#4338CA] rounded border-[#CBD5E1] focus:ring-[#4338CA] accent-[#4338CA] cursor-pointer">
+                <div class="truncate">
+                  <p class="font-mono text-xs font-semibold text-[#1F2433] truncate">two_column.pdf</p>
+                  <p class="text-[10px] text-[#4B5368]">15 pages</p>
+                </div>
+              </div>
+              <span class="font-sans px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#DCFCE7] text-[#14532D] shrink-0">Ready</span>
+            </div>
+
+            <!-- Doc 3: scan.pdf (1 page, OCR, Ready, unchecked) -->
+            <div class="flex items-center justify-between p-2 rounded-[8px] border border-[#E3E6EF] bg-white hover:bg-[#F9FAFC] transition-colors">
+              <div class="flex items-center space-x-2.5 min-w-0">
+                <input type="checkbox" class="w-4 h-4 text-[#4338CA] rounded border-[#CBD5E1] focus:ring-[#4338CA] accent-[#4338CA] cursor-pointer">
+                <div class="truncate">
+                  <p class="font-mono text-xs font-semibold text-[#1F2433] truncate">scan.pdf</p>
+                  <p class="text-[10px] text-[#4B5368]">1 page, OCR</p>
+                </div>
+              </div>
+              <span class="font-sans px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#DCFCE7] text-[#14532D] shrink-0">Ready</span>
+            </div>
+
+            <!-- Doc 4: q3_report.pdf (Reading pages, Processing, checkbox disabled) -->
+            <div class="flex items-center justify-between p-2 rounded-[8px] border border-[#E3E6EF] bg-[#FBFBFE] opacity-80">
+              <div class="flex items-center space-x-2.5 min-w-0">
+                <input type="checkbox" disabled="" class="w-4 h-4 text-[#CBD5E1] rounded border-[#E2E8F0] cursor-not-allowed">
+                <div class="truncate">
+                  <p class="font-mono text-xs font-semibold text-[#1F2433] truncate">q3_report.pdf</p>
+                  <p class="text-[10px] text-[#4B5368]">Reading pages</p>
+                </div>
+              </div>
+              <span class="font-sans px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#E0E7FF] text-[#312E81] shrink-0">Processing</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- CONVERSATIONS SECTION -->
+        <div class="space-y-2 pt-2 border-t border-[#E3E6EF]">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-semibold tracking-wider text-[#4B5368] uppercase font-sans">CONVERSATIONS</span>
+          </div>
+
+          <div class="space-y-1">
+            <!-- Active Conversation -->
+            <div class="p-2.5 rounded-[8px] bg-[#EEF2FF] border border-[#C7D2FE] cursor-pointer">
+              <div class="flex items-center justify-between">
+                <p class="text-xs font-semibold text-[#312E81] truncate">Revenue growth Q1 to Q4</p>
+                <span class="text-[10px] text-[#4338CA] font-medium shrink-0">Today</span>
+              </div>
+            </div>
+
+            <!-- Inactive Conversation -->
+            <div class="p-2.5 rounded-[8px] hover:bg-[#F6F7FB] border border-transparent hover:border-[#E3E6EF] cursor-pointer transition-colors">
+              <div class="flex items-center justify-between">
+                <p class="text-xs font-medium text-[#1F2433] truncate">Q4 revenue lookup</p>
+                <span class="text-[10px] text-[#4B5368] shrink-0">Yesterday</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Pinned Settings Button -->
+      <div class="p-3 border-t border-[#E3E6EF] bg-white">
+        <button class="w-full h-[44px] flex items-center justify-start space-x-2.5 px-3 rounded-[8px] text-[#4B5368] hover:text-[#1F2433] hover:bg-[#F6F7FB] border border-transparent hover:border-[#E3E6EF] transition-all">
+          <svg class="w-4 h-4 text-[#4B5368]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          <span class="text-xs font-medium">Settings</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- ========================================== -->
+    <!-- COLUMN 2: CENTER COLUMN (Flexible width)   -->
+    <!-- ========================================== -->
+    <main class="flex-1 flex flex-col h-full bg-[#F6F7FB] min-w-0 overflow-hidden">
+      
+      <!-- Center Header Bar -->
+      <header class="h-[56px] min-h-[56px] bg-white border-b border-[#E3E6EF] px-6 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <h1 class="text-sm font-semibold text-[#1F2433]">Revenue growth Q1 to Q4</h1>
+        </div>
+        <div class="flex items-center">
+          <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-[#EEF0F6] text-[#434A5E] border border-[#E3E6EF]">Scope: 2 documents</span>
+        </div>
+      </header>
+
+      <!-- Center Scrollable Feed Area -->
+      <div class="flex-1 overflow-y-auto custom-scroll p-6 space-y-5">
+        
+        <!-- User Message Bubble (Right-aligned, indigo) -->
+        <div class="flex justify-end">
+          <div class="max-w-[580px] bg-[#4338CA] text-white px-4 py-3 rounded-[12px] shadow-sm text-sm font-medium leading-relaxed">
+            By what percentage did revenue grow from Q1 to Q4?
+          </div>
+        </div>
+
+        <!-- Full-width White ANSWER CARD -->
+        <div class="w-full bg-white rounded-[12px] border border-[#E3E6EF] p-5 space-y-4 shadow-sm">
+          
+          <!-- (a) Top Row of Chips -->
+          <div class="flex items-center justify-between border-b border-[#F0F2F7] pb-3">
+            <div class="flex items-center space-x-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#DCFCE7] text-[#14532D]">Answered</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#DCFCE7] text-[#14532D] flex items-center space-x-1">
+                <svg class="w-3 h-3 text-[#14532D]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="">High: passed all automated checks</span>
+              </span>
+              <button class="w-5 h-5 rounded-full border border-[#CBD5E1] text-[#4B5368] hover:text-[#1F2433] hover:border-[#94A3B8] flex items-center justify-center text-[11px] font-serif transition-colors" title="Details">
+                i
+              </button>
+            </div>
+            <div class="font-mono text-xs text-[#4B5368]">
+              7.4 s
+            </div>
+          </div>
+
+          <!-- (b) Answer Text -->
+          <div class="text-sm text-[#1F2433] leading-relaxed">
+            Revenue grew by <span class="font-mono font-bold text-[#1F2433]">33.89%</span> from Q1 2025 (125,400 USD) to Q4 2025 (167,900 USD) 
+            <button class="inline-flex items-center font-mono text-xs font-semibold bg-[#EEF2FF] text-[#3730A3] hover:bg-[#E0E7FF] px-1.5 py-0.5 rounded border border-[#C7D2FE] mx-0.5 transition-colors cursor-pointer" title="Jump to citation">[S1]</button>. 
+            Q4 2025 was also the highest-revenue quarter 
+            <button class="inline-flex items-center font-mono text-xs font-semibold bg-[#EEF2FF] text-[#3730A3] hover:bg-[#E0E7FF] px-1.5 py-0.5 rounded border border-[#C7D2FE] mx-0.5 transition-colors cursor-pointer" title="Jump to citation">[S1]</button>.
+          </div>
+
+          <!-- (c) Sources Row -->
+          <div class="flex items-center space-x-2 pt-1">
+            <span class="text-xs font-medium text-[#4B5368]">Sources:</span>
+            <button class="font-mono text-xs font-medium text-[#4338CA] bg-white border border-[#C7D2FE] hover:bg-[#EEF2FF] px-2.5 py-1 rounded-[6px] transition-colors flex items-center space-x-1">
+              <svg class="w-3.5 h-3.5 text-[#4338CA]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              <span class="">text_table.pdf · p.3 · table</span>
+            </button>
+            <button class="font-mono text-xs font-medium text-[#4B5368] bg-white border border-[#E3E6EF] hover:bg-[#F6F7FB] px-2.5 py-1 rounded-[6px] transition-colors flex items-center space-x-1">
+              <svg class="w-3.5 h-3.5 text-[#4B5368]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              <span class="">text_table.pdf · p.3 · text</span>
+            </button>
+          </div>
+
+          <!-- (d) CALCULATION Box -->
+          <div class="rounded-[8px] border border-[#D5E2FB] bg-[#F7FAFF] p-3.5 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-semibold tracking-wider text-[#3B82F6] uppercase font-sans">CALCULATION</span>
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border border-[#E3E6EF] rounded bg-white overflow-hidden">
+                <thead class="bg-[#F0F5FD] text-[#4B5368] font-semibold border-b border-[#E3E6EF]">
+                  <tr>
+                    <th class="py-1.5 px-3">Operation</th>
+                    <th class="py-1.5 px-3">Operands</th>
+                    <th class="py-1.5 px-3">Result</th>
+                  </tr>
+                </thead>
+                <tbody class="font-mono divide-y divide-[#E3E6EF] text-[#1F2433]">
+                  <tr>
+                    <td class="py-1.5 px-3 font-sans text-xs">Percent change</td>
+                    <td class="py-1.5 px-3 text-xs">Q1: 125,400 <span class="text-[#4338CA] font-semibold">[S1]</span> → Q4: 167,900 <span class="text-[#4338CA] font-semibold">[S1]</span></td>
+                    <td class="py-1.5 px-3 font-bold text-xs text-[#1F2433]">33.89%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p class="text-[11px] text-[#4B5368]">Computed by code, not by the language model.</p>
+          </div>
+
+          <!-- (e) Expanded Verification details section with two columns -->
+          <div class="rounded-[8px] border border-[#E3E6EF] bg-[#FAFAFC] p-4 space-y-3">
+            <div class="flex items-center justify-between border-b border-[#E3E6EF] pb-2">
+              <span class="text-xs font-semibold text-[#1F2433]">Verification details</span>
+              <span class="text-[11px] text-[#4B5368]">Automated verification suite</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Left Column: EXACT CHECKS -->
+              <div class="space-y-2 border-r border-[#E3E6EF] pr-4">
+                <div class="flex items-center space-x-2">
+                  <span class="text-[11px] font-semibold text-[#1F2433] tracking-wide uppercase">EXACT CHECKS</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#EEF0F6] text-[#434A5E]">deterministic</span>
+                </div>
+                
+                <ul class="space-y-1.5 text-xs text-[#1F2433]">
+                  <li class="flex items-start justify-between">
+                    <span class="text-[#4B5368]">Citations point to sources sent to the model:</span>
+                    <span class="font-medium text-[#14532D] font-mono ml-2">passed</span>
+                  </li>
+                  <li class="flex items-start justify-between">
+                    <span class="text-[#4B5368]">Numbers found in cited evidence:</span>
+                    <span class="font-medium text-[#14532D] font-mono ml-2">passed</span>
+                  </li>
+                  <li class="flex items-start justify-between">
+                    <span class="text-[#4B5368]">Calculation operands found in source:</span>
+                    <span class="font-medium text-[#14532D] font-mono ml-2">passed</span>
+                  </li>
+                  <li class="flex items-start justify-between">
+                    <span class="text-[#4B5368]">Answer sentences covered by claims:</span>
+                    <span class="font-medium text-[#14532D] font-mono ml-2">passed</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Right Column: SIGNALS -->
+              <div class="space-y-2 pl-1">
+                <div class="flex items-center space-x-2">
+                  <span class="text-[11px] font-semibold text-[#1F2433] tracking-wide uppercase">SIGNALS</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#FEF3C7] text-[#78350F]">heuristic, can be wrong</span>
+                </div>
+
+                <ul class="space-y-1.5 text-xs text-[#1F2433]">
+                  <li class="flex items-start justify-between">
+                    <span class="text-[#4B5368]">Claim 1 overlaps its cited text:</span>
+                    <span class="font-medium text-[#1F2433] font-mono ml-2">strong</span>
+                  </li>
+                  <li class="flex items-start justify-between">
+                    <span class="text-[#4B5368]">Claim 2 overlaps its cited text:</span>
+                    <span class="font-medium text-[#1F2433] font-mono ml-2">strong</span>
+                  </li>
+                  <li class="flex items-start justify-between">
+                    <span class="text-[#4B5368]">Model check needed for borderline claims:</span>
+                    <span class="font-medium text-[#4B5368] font-mono ml-2">none</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Divider and disclaimer line -->
+            <div class="pt-2 border-t border-[#E3E6EF]">
+              <p class="text-[11px] text-[#4B5368]">Heuristic checks are signals, not proof. Open the source to confirm.</p>
+            </div>
+          </div>
+
+          <!-- (f) Copy answer button -->
+          <div class="pt-1 flex justify-start">
+            <button class="h-8 px-3 rounded-[6px] border border-[#E3E6EF] hover:border-[#CBD5E1] bg-white text-[#4B5368] hover:text-[#1F2433] text-xs font-medium flex items-center space-x-1.5 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+              </svg>
+              <span class="">Copy answer</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Bottom Fixed Composer -->
+      <div class="p-4 bg-white border-t border-[#E3E6EF]">
+        <div class="max-w-4xl mx-auto space-y-1.5">
+          <label class="text-xs font-medium text-[#4B5368] block">Ask a question about the selected documents</label>
+          <div class="relative border border-[#E3E6EF] focus-within:border-[#4338CA] rounded-[8px] bg-white transition-all">
+            <textarea rows="2" placeholder="For example: What was revenue in Q4 2025?" class="w-full text-xs text-[#1F2433] placeholder-[#94A3B8] p-2.5 rounded-[8px] focus:outline-none resize-none bg-transparent"></textarea>
+            <div class="flex items-center justify-between px-3 py-2 border-t border-[#F1F3F9] bg-[#FAFAFC] rounded-b-[8px]">
+              <span class="font-mono text-[11px] text-[#4B5368]">0 / 1000</span>
+              <button class="h-[36px] px-4 bg-[#4338CA] hover:bg-[#3730A3] text-white font-medium text-xs rounded-[8px] flex items-center space-x-1.5 shadow-sm transition-colors">
+                <span class="">Send</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- COLUMN 3: RIGHT EVIDENCE VIEWER (420px)    -->
+    <!-- ========================================== -->
+    <aside class="w-[420px] min-w-[420px] max-w-[420px] h-full bg-white border-l border-[#E3E6EF] flex flex-col justify-between overflow-hidden">
+      
+      <!-- Top Title and Close -->
+      <div class="h-[56px] min-h-[56px] border-b border-[#E3E6EF] px-4 flex items-center justify-between bg-white">
+        <div class="flex items-center space-x-2">
+          <svg class="w-4 h-4 text-[#4338CA]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+          </svg>
+          <span class="font-mono text-xs font-semibold text-[#1F2433]">text_table.pdf</span>
+        </div>
+        <button class="text-xs font-medium text-[#4B5368] hover:text-[#1F2433] px-2 py-1 rounded hover:bg-[#F6F7FB] transition-colors">
+          Close
+        </button>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="px-4 py-2.5 border-b border-[#E3E6EF] bg-[#FAFAFC] space-y-1.5">
+        <div class="flex items-center justify-between">
+          <!-- Page pagination -->
+          <div class="flex items-center space-x-1.5">
+            <button class="w-7 h-7 rounded border border-[#E3E6EF] bg-white flex items-center justify-center text-[#4B5368] hover:text-[#1F2433] hover:bg-[#F1F3F9] transition-colors" title="Previous page">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+            <span class="font-mono text-xs text-[#1F2433] px-1 font-medium">Page 3 of 5</span>
+            <button class="w-7 h-7 rounded border border-[#E3E6EF] bg-white flex items-center justify-center text-[#4B5368] hover:text-[#1F2433] hover:bg-[#F1F3F9] transition-colors" title="Next page">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Type chip & Zoom / Fit width -->
+          <div class="flex items-center space-x-1.5">
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-[#E0E7FF] text-[#312E81]">table</span>
+            <span class="font-mono text-xs text-[#4B5368]">100%</span>
+            <button class="px-2 py-1 text-xs font-medium border border-[#E3E6EF] bg-white rounded hover:bg-[#F1F3F9] text-[#1F2433] transition-colors">
+              Fit width
+            </button>
+          </div>
+        </div>
+
+        <!-- Section info -->
+        <div class="text-[11px] text-[#4B5368]">
+          Section: <span class="text-[#1F2433] font-medium">Quarterly Financial Table</span>
+        </div>
+      </div>
+
+      <!-- Viewer Body (Scrollable) -->
+      <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-4 bg-[#F0F2F6]">
+        
+        <!-- Rendered Document Page (White paper container) -->
+        <div class="bg-white rounded-[6px] border border-[#CBD5E1] p-4 shadow-sm space-y-3">
+          
+          <div class="border-b border-[#E3E6EF] pb-2">
+            <h3 class="text-xs font-bold text-[#1F2433]">Page 3 — Quarterly Financial Table</h3>
+            <p class="text-[10px] text-[#4B5368] mt-0.5">Primary accounting transcript</p>
+          </div>
+
+          <!-- Bordered Table -->
+          <div class="overflow-hidden border border-[#E3E6EF] rounded">
+            <table class="w-full text-left text-[11px] divide-y divide-[#E3E6EF]">
+              <thead class="bg-[#F8FAFC] text-[#4B5368] font-semibold">
+                <tr>
+                  <th class="py-1.5 px-2">Quarter</th>
+                  <th class="py-1.5 px-2">Revenue (USD)</th>
+                  <th class="py-1.5 px-2">Operating Cost (USD)</th>
+                  <th class="py-1.5 px-2">Units Produced</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#E3E6EF] font-mono text-[#1F2433]">
+                <!-- Q1 2025 Highlighted -->
+                <tr class="highlight-row">
+                  <td class="py-1.5 px-2 font-semibold text-[#312E81]">Q1 2025</td>
+                  <td class="py-1.5 px-2 font-bold text-[#312E81]">125,400</td>
+                  <td class="py-1.5 px-2 text-[#312E81]">83,200</td>
+                  <td class="py-1.5 px-2 text-[#312E81]">4,850</td>
+                </tr>
+                <tr>
+                  <td class="py-1.5 px-2">Q2 2025</td>
+                  <td class="py-1.5 px-2">138,750</td>
+                  <td class="py-1.5 px-2">91,600</td>
+                  <td class="py-1.5 px-2">5,120</td>
+                </tr>
+                <tr>
+                  <td class="py-1.5 px-2">Q3 2025</td>
+                  <td class="py-1.5 px-2">142,300</td>
+                  <td class="py-1.5 px-2">94,150</td>
+                  <td class="py-1.5 px-2">5,260</td>
+                </tr>
+                <!-- Q4 2025 Highlighted -->
+                <tr class="highlight-row">
+                  <td class="py-1.5 px-2 font-semibold text-[#312E81]">Q4 2025</td>
+                  <td class="py-1.5 px-2 font-bold text-[#312E81]">167,900</td>
+                  <td class="py-1.5 px-2 text-[#312E81]">108,400</td>
+                  <td class="py-1.5 px-2 text-[#312E81]">5,940</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table note -->
+          <div class="bg-[#F8FAFC] p-2 rounded border border-[#E3E6EF]">
+            <p class="text-[10px] text-[#4B5368] leading-tight">
+              Table note: revenue and operating cost are in US dollars. The highest revenue occurred in Q4 2025.
+            </p>
+          </div>
+
+        </div>
+
+        <!-- CITED SNIPPET box with indigo left border showing two mono table rows -->
+        <div class="bg-white rounded-[8px] border border-[#E3E6EF] border-l-4 border-l-[#4338CA] p-3 space-y-2 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold text-[#4338CA] tracking-wider uppercase font-mono">CITED SNIPPET · [S1]</span>
+            <span class="text-[10px] text-[#4B5368] font-mono">p.3</span>
+          </div>
+          
+          <div class="bg-[#F7FAFF] rounded p-2 border border-[#E0E7FF] font-mono text-[11px] text-[#1F2433] space-y-1">
+            <div class="flex justify-between items-center text-[#312E81] font-medium">
+              <span class="">Q1 2025 | Rev: 125,400 USD | Cost: 83,200 USD | Units: 4,850</span>
+            </div>
+            <div class="flex justify-between items-center text-[#312E81] font-medium">
+              <span class="">Q4 2025 | Rev: 167,900 USD | Cost: 108,400 USD | Units: 5,940</span>
+            </div>
+          </div>
+          
+          <p class="text-[10px] text-[#4B5368]">Direct excerpt extracted from Quarterly Financial Table</p>
+        </div>
+
+      </div>
+
+    </aside>
+
+  </div>
+
+
+
+
+
+</body></html>

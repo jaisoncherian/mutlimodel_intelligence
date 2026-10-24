@@ -1,0 +1,24 @@
+{
+  "projectId": "4450791710793224296",
+  "title": "RetrievIQ Document Intelligence Interface",
+  "deviceType": "DESKTOP",
+  "Last Sync Time": "2026-10-24T06:45:00.000Z",
+  "screens": {
+    "20feb1f3a190426dbf576b32d8fed173": {
+      "id": "20feb1f3a190426dbf576b32d8fed173",
+      "label": "DocuLens AI — Polished Analytics-Style Portfolio Landing Page",
+      "sourceScreen": "projects/4450791710793224296/screens/20feb1f3a190426dbf576b32d8fed173",
+      "width": 2560,
+      "height": 7426,
+      "canvasPosition": { "x": 0, "y": 7090 }
+    },
+    "47bf3019c2994e5e8662467ad8b6d249": {
+      "id": "47bf3019c2994e5e8662467ad8b6d249",
+      "label": "RetrievIQ Desktop Workspace",
+      "sourceScreen": "projects/4450791710793224296/screens/47bf3019c2994e5e8662467ad8b6d249",
+      "width": 1280,
+      "height": 900,
+      "canvasPosition": { "x": 1024, "y": 0 }
+    }
+  }
+}
