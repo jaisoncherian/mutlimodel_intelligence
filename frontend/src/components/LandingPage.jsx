@@ -13,9 +13,9 @@ export default function LandingPage({ onOpenWorkspace }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fd] flex flex-col text-on-surface">
+    <div className="min-h-screen bg-page flex flex-col text-on-surface transition-colors">
       {/* TOP NAVIGATION */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-surface-container-high/80 transition-all">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-xl border-b border-bordercol/80 transition-all">
         <div className="h-20 max-w-[1140px] mx-auto px-gutter flex items-center justify-between">
           {/* Logo Mark */}
           <button
@@ -34,19 +34,19 @@ export default function LandingPage({ onOpenWorkspace }) {
           <nav className="hidden md:flex items-center gap-1 bg-surface-container-low/70 p-1.5 rounded-xl border border-surface-container-high/60">
             <button
               onClick={() => handleScrollTo('how-it-works')}
-              className="font-body-md text-body-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-white transition-all px-3.5 py-1.5 rounded-lg cursor-pointer"
+              className="font-body-md text-body-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface transition-all px-3.5 py-1.5 rounded-lg cursor-pointer"
             >
               How it works
             </button>
             <button
               onClick={() => handleScrollTo('features')}
-              className="font-body-md text-body-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-white transition-all px-3.5 py-1.5 rounded-lg cursor-pointer"
+              className="font-body-md text-body-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface transition-all px-3.5 py-1.5 rounded-lg cursor-pointer"
             >
               Features
             </button>
             <button
               onClick={() => handleScrollTo('tech')}
-              className="font-body-md text-body-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-white transition-all px-3.5 py-1.5 rounded-lg cursor-pointer"
+              className="font-body-md text-body-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface transition-all px-3.5 py-1.5 rounded-lg cursor-pointer"
             >
               Tech
             </button>
@@ -56,11 +56,11 @@ export default function LandingPage({ onOpenWorkspace }) {
           <div className="flex items-center gap-4">
             <a
               className="text-body-md text-on-surface-variant hover:text-on-surface font-medium transition-colors px-2 py-1"
-              href="https://github.com"
+              href="[GITHUB URL]"
               target="_blank"
               rel="noreferrer"
             >
-              GitHub
+              [GITHUB URL]
             </a>
             <button
               onClick={onOpenWorkspace}
@@ -73,7 +73,7 @@ export default function LandingPage({ onOpenWorkspace }) {
       </header>
 
       {/* MAIN WRAPPER */}
-      <main className="w-full pt-20 bg-[#f8f9fd] flex-1">
+      <main className="w-full pt-20 bg-page flex-1">
         <div className="flex flex-col w-full text-on-surface">
           {/* HERO SECTION */}
           <section className="w-full relative overflow-hidden py-16 lg:py-24 border-b border-surface-container-high/60">
@@ -129,27 +129,27 @@ export default function LandingPage({ onOpenWorkspace }) {
                         <span className="w-3 h-3 rounded-full bg-[#27c93f]/80 inline-block" />
                         <div className="h-3.5 w-[1px] bg-[#232b45] mx-1" />
                         <span className="font-mono-code text-[11px] text-slate-400">
-                          workspace / session-q3-audit
+                          workspace / doculens-session
                         </span>
                       </div>
                       <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#1c243c] border border-[#2c3756]">
                         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                         <span className="font-mono-code text-[11px] text-emerald-400 font-medium">
-                          pipeline-idle
+                          ready
                         </span>
                       </div>
                     </div>
 
                     {/* Panels */}
                     <div className="grid grid-cols-12 min-h-[390px] divide-x divide-[#232b45] bg-[#0c101d]">
-                      {/* Left Pane: Corpus Sidebar */}
+                      {/* Left Pane: Documents Sidebar */}
                       <div className="col-span-3 bg-[#111628]/70 p-3 flex flex-col gap-1.5">
                         <div className="flex items-center justify-between px-2 py-1">
                           <span className="font-mono-code text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
-                            Corpus
+                            Documents
                           </span>
                           <span className="text-[10px] font-mono-code text-indigo-400 bg-indigo-500/10 px-1.5 rounded">
-                            3 files
+                            Loaded
                           </span>
                         </div>
                         {['text_table.pdf', 'two_column.pdf', 'scan.pdf'].map((fname, idx) => {
@@ -175,8 +175,8 @@ export default function LandingPage({ onOpenWorkspace }) {
                           );
                         })}
                         <div className="mt-auto p-2 rounded-lg bg-[#151c30] border border-[#232c49] text-[10px] font-mono-code text-slate-400 flex items-center justify-between">
-                          <span>Index: AST + Embed</span>
-                          <span className="text-emerald-400">Synced</span>
+                          <span>Status</span>
+                          <span className="text-emerald-400">Ready</span>
                         </div>
                       </div>
 
@@ -205,11 +205,7 @@ export default function LandingPage({ onOpenWorkspace }) {
                               </span>
                             </div>
                             <p className="font-body-sm text-[12px] text-slate-200 leading-relaxed">
-                              Revenue increased by{' '}
-                              <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono-code px-1.5 py-0.5 rounded font-medium">
-                                14.2%
-                              </span>{' '}
-                              year-over-year, moving from $18.3M to $20.9M in Q3{' '}
+                              Revenue increased from Q1 to Q4 as reported in the financial summary table{' '}
                               <button
                                 type="button"
                                 onClick={() => setCitationFocus(!citationFocus)}
@@ -226,7 +222,7 @@ export default function LandingPage({ onOpenWorkspace }) {
                             <div className="pt-2 border-t border-[#222b47] flex items-center gap-1.5 text-slate-400">
                               <span className="material-symbols-outlined text-[14px] text-emerald-400">check_circle</span>
                               <span className="font-mono-code text-[10px] text-slate-300">
-                                Deterministic code check: Math matched page 4.
+                                Deterministic code check: Calculated by code.
                               </span>
                             </div>
                           </div>
@@ -243,25 +239,25 @@ export default function LandingPage({ onOpenWorkspace }) {
                       {/* Right Pane: Evidence Inspector */}
                       <div className="col-span-4 bg-[#111628]/90 p-3 flex flex-col gap-2.5">
                         <div className="flex items-center justify-between pb-1 border-b border-[#232b45]">
-                          <span className="font-mono-code text-[11px] text-slate-400">Source: Page 4</span>
+                          <span className="font-mono-code text-[11px] text-slate-400">Source: Page Table</span>
                           <span className="font-mono-code text-[10px] text-indigo-300 bg-indigo-600/30 border border-indigo-500/40 px-2 py-0.5 rounded-full font-medium">
                             [S1] Focus
                           </span>
                         </div>
                         <div className="flex-1 bg-[#161c32] border border-[#273252] p-2.5 rounded-xl shadow-inner flex flex-col gap-2 text-[10px]">
                           <div className="font-mono-code text-slate-400 pb-1 text-[10px] flex items-center justify-between">
-                            <span>Table 3.1: Financial Performance</span>
+                            <span>Table: Financial Performance</span>
                             <span className="material-symbols-outlined text-[12px] text-slate-500">open_in_full</span>
                           </div>
                           <div className="grid grid-cols-3 gap-1 font-mono-code text-slate-400 font-medium py-1 bg-[#1e2642] px-1.5 rounded text-[10px]">
-                            <span>Period</span>
-                            <span>Rev</span>
-                            <span>Margin</span>
+                            <span>Quarter</span>
+                            <span>Revenue</span>
+                            <span>Operating Cost</span>
                           </div>
                           <div className="grid grid-cols-3 gap-1 font-mono-code py-1 px-1.5 text-slate-400">
-                            <span>Q2</span>
-                            <span>$18.3M</span>
-                            <span>22.1%</span>
+                            <span>Q1</span>
+                            <span>Recorded</span>
+                            <span>Recorded</span>
                           </div>
                           <div
                             className={`grid grid-cols-3 gap-1 font-mono-code py-1.5 px-1.5 rounded font-semibold transition-all ${
@@ -270,18 +266,13 @@ export default function LandingPage({ onOpenWorkspace }) {
                                 : 'bg-indigo-600/25 border border-indigo-500/40 text-emerald-300'
                             }`}
                           >
-                            <span>Q3</span>
-                            <span>$20.9M</span>
-                            <span>24.8%</span>
-                          </div>
-                          <div className="grid grid-cols-3 gap-1 font-mono-code py-1 px-1.5 text-slate-400">
-                            <span>Q4 (est)</span>
-                            <span>$22.0M</span>
-                            <span>25.0%</span>
+                            <span>Q4</span>
+                            <span>Recorded</span>
+                            <span>Recorded</span>
                           </div>
                           <div className="mt-auto pt-2 bg-indigo-950/50 border border-indigo-800/40 p-2 rounded-lg text-indigo-200 text-[9px] font-mono-code flex items-center gap-1.5">
-                            <span className="material-symbols-outlined text-[13px] text-indigo-400">crop_free</span>
-                            <span>Bounding Box: [x:120, y:342, w:410, h:65]</span>
+                            <span className="material-symbols-outlined text-[13px] text-indigo-400">description</span>
+                            <span>Source snippet linked to citation</span>
                           </div>
                         </div>
                       </div>
@@ -532,7 +523,7 @@ export default function LandingPage({ onOpenWorkspace }) {
                       <div className="absolute inset-0 dark-dot-grid opacity-35" />
                       <div className="absolute w-48 h-48 bg-primary-container/20 rounded-full blur-2xl pointer-events-none" />
                       <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-md border border-white/15 px-3 py-1 rounded-full font-mono-code text-[11px] text-white">
-                        {isVideoPlaying ? 'Live Demo Preview' : '03:00 / Quick walkthrough'}
+                        {isVideoPlaying ? 'Demo Walkthrough' : 'Walkthrough overview'}
                       </div>
                       <div className="relative z-10 flex flex-col items-center gap-3">
                         <div className="h-16 w-16 rounded-full bg-white text-primary-container flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-primary-fixed transition-all duration-300">
@@ -541,7 +532,7 @@ export default function LandingPage({ onOpenWorkspace }) {
                           </span>
                         </div>
                         <span className="font-body-sm text-[13px] font-medium text-slate-200 group-hover:text-white transition-colors">
-                          {isVideoPlaying ? 'Interactive walkthrough playing' : 'Watch the 3-minute demo'}
+                          {isVideoPlaying ? 'Interactive walkthrough playing' : 'Watch the walkthrough'}
                         </span>
                       </div>
                     </div>
@@ -565,7 +556,7 @@ export default function LandingPage({ onOpenWorkspace }) {
               <div className="flex flex-wrap gap-2.5">
                 {[
                   'React',
-                  'TypeScript',
+                  'JavaScript',
                   'Tailwind CSS',
                   'Flask',
                   'PostgreSQL',
@@ -590,7 +581,7 @@ export default function LandingPage({ onOpenWorkspace }) {
             <div className="max-w-[1140px] mx-auto px-gutter flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="flex flex-col gap-1.5 max-w-xl">
                 <span className="font-body-md text-body-md text-on-surface font-semibold tracking-tight">
-                  DocuLens AI, an evidentiary multimodal document intelligence workspace
+                  DocuLens AI by [YOUR NAME] — evidentiary multimodal document intelligence workspace
                 </span>
                 <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
                   Built for learning. Answers are checked automatically, but always open the source to confirm.
@@ -599,12 +590,12 @@ export default function LandingPage({ onOpenWorkspace }) {
               <div className="flex items-center gap-6">
                 <a
                   className="font-body-sm text-body-sm font-medium text-primary-container hover:text-primary transition-colors inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-surface-container-low"
-                  href="https://github.com"
+                  href="[GITHUB URL]"
                   target="_blank"
                   rel="noreferrer"
                 >
                   <span className="material-symbols-outlined text-[18px]">code</span>
-                  <span>GitHub</span>
+                  <span>[GITHUB URL]</span>
                 </a>
                 <a
                   className="font-body-sm text-body-sm font-medium text-primary-container hover:text-primary transition-colors inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-surface-container-low"
@@ -657,22 +648,22 @@ export default function LandingPage({ onOpenWorkspace }) {
                   </button>
                   <a
                     className="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer"
-                    href="https://github.com"
+                    href="[GITHUB URL]"
                     target="_blank"
                     rel="noreferrer"
                   >
-                    GitHub
+                    [GITHUB URL]
                   </a>
                 </nav>
               </div>
 
               <div className="mt-8 pt-8 border-t border-surface-container-high/70 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p className="font-mono-code text-[11px] text-on-surface-variant">
-                  © 2025 DocuLens AI Portfolio. High-fidelity algorithmic parsing engine.
+                  © 2025 DocuLens AI by [YOUR NAME]. Evidentiary document intelligence workspace.
                 </p>
                 <div className="flex items-center gap-2 font-mono-code text-[11px] text-on-surface-variant bg-white px-3 py-1 rounded-full border border-surface-container-high">
                   <span className="inline-block w-2 h-2 rounded-full bg-secondary" />
-                  <span>pipeline-ready</span>
+                  <span>automated-checks</span>
                 </div>
               </div>
             </div>

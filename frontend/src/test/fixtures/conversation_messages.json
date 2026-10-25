@@ -1,0 +1,101 @@
+[
+  {
+    "citations": [],
+    "content": "What was the revenue in Q5 2099?",
+    "conversation_id": "220e7937-f25c-4425-a7d4-c178cc63cc0c",
+    "created_at": "2026-10-24T15:47:28.712521+00:00",
+    "id": 83,
+    "role": "user",
+    "used_vision": false,
+    "verification": null
+  },
+  {
+    "citations": [],
+    "content": "",
+    "conversation_id": "220e7937-f25c-4425-a7d4-c178cc63cc0c",
+    "created_at": "2026-10-24T15:47:29.070487+00:00",
+    "id": 84,
+    "role": "assistant",
+    "used_vision": false,
+    "verification": {
+      "answering": {
+        "status": "insufficient_evidence",
+        "timings_ms": {
+          "model_pass1_ms": 42049,
+          "retrieval_ms": 89038
+        },
+        "usage_pass1": {
+          "eval_count": 87,
+          "prompt_eval_count": 920
+        }
+      },
+      "verification": {
+        "checks": [
+          {
+            "details": {
+              "claims_without_valid_citation": [],
+              "invalid_ids": [],
+              "sources_sent": [
+                "S1",
+                "S2",
+                "S3",
+                "S4",
+                "S5"
+              ]
+            },
+            "kind": "deterministic",
+            "name": "citation_validity",
+            "passed": true
+          },
+          {
+            "details": {
+              "numbers": []
+            },
+            "kind": "deterministic",
+            "name": "number_grounding",
+            "passed": true
+          },
+          {
+            "details": {
+              "claims": [],
+              "note": "passed heuristic check \u2014 not proven correct"
+            },
+            "kind": "heuristic",
+            "name": "claim_support",
+            "passed": true
+          },
+          {
+            "details": {
+              "uncovered_sentences": []
+            },
+            "kind": "deterministic",
+            "name": "answer_coverage",
+            "passed": true
+          }
+        ],
+        "claims": [],
+        "confidence": "high",
+        "disclaimer": "Heuristic checks are fallible signals and a 'passed' result does not prove the answer is correct.",
+        "mode": "both",
+        "numbers": [],
+        "removed_claims": [],
+        "sources_sent": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5"
+        ],
+        "state": "ok",
+        "timings_ms": {
+          "answer_coverage_ms": 0,
+          "citation_validity_ms": 0,
+          "claim_support_ms": 0,
+          "number_grounding_ms": 0,
+          "total_ms": 0
+        },
+        "uncovered_sentences": []
+      }
+    }
+  }
+]

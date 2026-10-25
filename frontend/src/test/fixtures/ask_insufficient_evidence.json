@@ -1,0 +1,84 @@
+{
+  "answer": "",
+  "calculations": [],
+  "citations": [],
+  "conversation_id": "40af8589-a0ac-46d2-89c4-9d08334de8ff",
+  "message_id": 86,
+  "missing": "The provided sources (S1, S3) contain financial data only for Q1 through Q4 of the year 2025. There is no information regarding Q5 or any year other than 2025.",
+  "rejected_calculations": [],
+  "status": "insufficient_evidence",
+  "timings_ms": {
+    "model_pass1_ms": 13495,
+    "persist_ms": 4116,
+    "retrieval_ms": 18224,
+    "total_ms": 35835
+  },
+  "used_vision": false,
+  "verification": {
+    "checks": [
+      {
+        "details": {
+          "claims_without_valid_citation": [],
+          "invalid_ids": [],
+          "sources_sent": [
+            "S1",
+            "S2",
+            "S3",
+            "S4",
+            "S5"
+          ]
+        },
+        "kind": "deterministic",
+        "name": "citation_validity",
+        "passed": true
+      },
+      {
+        "details": {
+          "numbers": []
+        },
+        "kind": "deterministic",
+        "name": "number_grounding",
+        "passed": true
+      },
+      {
+        "details": {
+          "claims": [],
+          "note": "passed heuristic check \u2014 not proven correct"
+        },
+        "kind": "heuristic",
+        "name": "claim_support",
+        "passed": true
+      },
+      {
+        "details": {
+          "uncovered_sentences": []
+        },
+        "kind": "deterministic",
+        "name": "answer_coverage",
+        "passed": true
+      }
+    ],
+    "claims": [],
+    "confidence": "high",
+    "disclaimer": "Heuristic checks are fallible signals and a 'passed' result does not prove the answer is correct.",
+    "mode": "both",
+    "numbers": [],
+    "removed_claims": [],
+    "sources_sent": [
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5"
+    ],
+    "state": "ok",
+    "timings_ms": {
+      "answer_coverage_ms": 0,
+      "citation_validity_ms": 0,
+      "claim_support_ms": 0,
+      "number_grounding_ms": 0,
+      "total_ms": 0
+    },
+    "uncovered_sentences": []
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "answer": "The revenue in Q1 2025 was $125,400 (S1, S3).",
+  "calculations": [],
+  "citations": [
+    {
+      "also_in": [],
+      "content_type": "text",
+      "doc_id": "ad7cfd49-5bea-4f7c-9669-4fccea237081",
+      "filename": "text_table.pdf",
+      "page": 3,
+      "section": "Page 3 \u2014 Quarterly Financial Table",
+      "snippet": "Page 3 \u2014 Quarterly Financial Table The following bordered table contains the report's quarterly financial values. Quarter Revenue (USD) Operating Cost (USD) Units Produced Q1 2025 125,400 83,200 4,850 Q2 2025 138,750 91,600 5,120 Q3 2025 142,300 94,150 5,260 Q4 2025 167,900 108,400 5,940 Table note: revenue and operating cost are in US dollars. The highest revenue occurred in Q4 2025.",
+      "source_id": "S1"
+    },
+    {
+      "also_in": [],
+      "content_type": "table",
+      "doc_id": "ad7cfd49-5bea-4f7c-9669-4fccea237081",
+      "filename": "text_table.pdf",
+      "page": 3,
+      "section": "Page 3 \u2014 Quarterly Financial Table",
+      "snippet": "| Quarter | Revenue (USD) | Operating Cost (USD) | Units Produced |\n| --- | --- | --- | --- |\n| Q1 2025 | 125,400 | 83,200 | 4,850 |\n| Q2 2025 | 138,750 | 91,600 | 5,120 |\n| Q3 2025 | 142,300 | 94,150 | 5,260 |\n| Q4 2025 | 167,900 | 108,400 | 5,940 |",
+      "source_id": "S3"
+    }
+  ],
+  "conversation_id": "f98bb517-abee-44ea-a91a-b05420e2e58a",
+  "message_id": 90,
+  "missing": "The projected revenue for Q5 2025 is not mentioned in the provided sources. The report only covers data up to Q4 2025 (S1, S3) and does not contain any projections or forecasts for future quarters.",
+  "rejected_calculations": [],
+  "status": "partial",
+  "timings_ms": {
+    "model_pass1_ms": 6772,
+    "persist_ms": 1318,
+    "retrieval_ms": 917,
+    "total_ms": 9007
+  },
+  "used_vision": false,
+  "verification": {
+    "checks": [
+      {
+        "details": {
+          "claims_without_valid_citation": [],
+          "invalid_ids": [],
+          "sources_sent": [
+            "S1",
+            "S2",
+            "S3",
+            "S4",
+            "S5",
+            "S6",
+            "S7"
+          ]
+        },
+        "kind": "deterministic",
+        "name": "citation_validity",
+        "passed": true
+      },
+      {
+        "details": {
+          "numbers": [
+            {
+              "approximate": false,
+              "claim_index": null,
+              "grounded_in": null,
+              "ignored_reason": null,
+              "ok": false,
+              "text": "2025",
+              "value": "2025"
+            },
+            {
+              "approximate": false,
+              "claim_index": null,
+              "grounded_in": null,
+              "ignored_reason": null,
+              "ok": false,
+              "text": "$125,400",
+              "value": "125400"
+            }
+          ]
+        },
+        "kind": "deterministic",
+        "name": "number_grounding",
+        "passed": false
+      },
+      {
+        "details": {
+          "claims": [
+            {
+              "method": "lexical",
+              "overlap": 1.0,
+              "sources": [
+                "S1",
+                "S3"
+              ],
+              "support": "supported",
+              "text": "Revenue in Q1 2025: $125,400"
+            }
+          ],
+          "note": "passed heuristic check \u2014 not proven correct"
+        },
+        "kind": "heuristic",
+        "name": "claim_support",
+        "passed": true
+      },
+      {
+        "details": {
+          "uncovered_sentences": []
+        },
+        "kind": "deterministic",
+        "name": "answer_coverage",
+        "passed": true
+      }
+    ],
+    "claims": [
+      {
+        "kind": "heuristic",
+        "method": "lexical",
+        "overlap": 1.0,
+        "sources": [
+          "S1",
+          "S3"
+        ],
+        "support": "supported",
+        "text": "Revenue in Q1 2025: $125,400"
+      }
+    ],
+    "confidence": "low",
+    "disclaimer": "Heuristic checks are fallible signals and a 'passed' result does not prove the answer is correct.",
+    "mode": "both",
+    "numbers": [
+      {
+        "approximate": false,
+        "claim_index": null,
+        "grounded_in": null,
+        "ignored_reason": null,
+        "ok": false,
+        "text": "2025",
+        "value": "2025"
+      },
+      {
+        "approximate": false,
+        "claim_index": null,
+        "grounded_in": null,
+        "ignored_reason": null,
+        "ok": false,
+        "text": "$125,400",
+        "value": "125400"
+      }
+    ],
+    "removed_claims": [],
+    "sources_sent": [
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7"
+    ],
+    "state": "ok",
+    "timings_ms": {
+      "answer_coverage_ms": 0,
+      "citation_validity_ms": 0,
+      "claim_support_ms": 0,
+      "number_grounding_ms": 0,
+      "total_ms": 0
+    },
+    "uncovered_sentences": []
+  }
+}

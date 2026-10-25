@@ -1,0 +1,58 @@
+[
+  {
+    "chunk_count": 1,
+    "filename": "scan.pdf",
+    "id": "2ee20295-1626-47a8-912f-afbb277dd43c",
+    "page_count": 1,
+    "status": "ready",
+    "uploaded_at": "2026-10-21T13:50:52.198948Z"
+  },
+  {
+    "chunk_count": 1,
+    "filename": "scan.pdf",
+    "id": "f6538c6a-1639-4293-a198-a34fc92c567e",
+    "page_count": 1,
+    "status": "ready",
+    "uploaded_at": "2026-10-21T12:48:44.905054Z"
+  },
+  {
+    "chunk_count": 83,
+    "filename": "two_column.pdf",
+    "id": "e3811430-2f92-4a13-bea6-424fd88b30f4",
+    "page_count": 15,
+    "status": "ready",
+    "uploaded_at": "2026-10-21T12:48:43.454732Z"
+  },
+  {
+    "chunk_count": 7,
+    "filename": "text_table.pdf",
+    "id": "ad7cfd49-5bea-4f7c-9669-4fccea237081",
+    "page_count": 5,
+    "status": "ready",
+    "uploaded_at": "2026-10-21T12:48:41.685556Z"
+  },
+  {
+    "chunk_count": 1,
+    "filename": "scan.pdf",
+    "id": "28c842e5-3580-4330-9db7-019dd5ec8ee3",
+    "page_count": 1,
+    "status": "ready",
+    "uploaded_at": "2026-10-12T08:31:02.231559Z"
+  },
+  {
+    "chunk_count": 83,
+    "filename": "two_column.pdf",
+    "id": "8124c229-beb1-4cd6-bd9a-2fd45ce12246",
+    "page_count": 15,
+    "status": "ready",
+    "uploaded_at": "2026-10-12T08:31:01.665311Z"
+  },
+  {
+    "chunk_count": 7,
+    "filename": "text_table.pdf",
+    "id": "dfaab61d-163d-4f77-9b06-04cdb5940d0b",
+    "page_count": 5,
+    "status": "ready",
+    "uploaded_at": "2026-10-12T08:31:00.642364Z"
+  }
+]

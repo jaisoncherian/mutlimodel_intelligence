@@ -1,0 +1,279 @@
+{
+  "answer": "The percentage revenue growth from Q1 to Q4 is approximately 33.9%. This is calculated by taking the difference between Q4 revenue ($167,900) and Q1 revenue ($125,400), which equals $42,500 (as shown in 42500 USD), and dividing it by the Q1 revenue ($125,400).",
+  "calculations": [
+    {
+      "formatted": "42500 USD",
+      "id": "c1",
+      "operands": [
+        {
+          "label": "Q4_revenue",
+          "source": "S2",
+          "value_text": "167,900"
+        },
+        {
+          "label": "Q1_revenue",
+          "source": "S2",
+          "value_text": "125,400"
+        }
+      ],
+      "operation": "subtract",
+      "result": 42500.0,
+      "unit": "USD"
+    }
+  ],
+  "citations": [
+    {
+      "also_in": [],
+      "content_type": "text",
+      "doc_id": "ad7cfd49-5bea-4f7c-9669-4fccea237081",
+      "filename": "text_table.pdf",
+      "page": 3,
+      "section": "Page 3 \u2014 Quarterly Financial Table",
+      "snippet": "Page 3 \u2014 Quarterly Financial Table The following bordered table contains the report's quarterly financial values. Quarter Revenue (USD) Operating Cost (USD) Units Produced Q1 2025 125,400 83,200 4,850 Q2 2025 138,750 91,600 5,120 Q3 2025 142,300 94,150 5,260 Q4 2025 167,900 108,400 5,940 Table note: revenue and operating cost are in US dollars. The highest revenue occurred in Q4 2025.",
+      "source_id": "S2"
+    }
+  ],
+  "conversation_id": "442c7968-b992-4e3e-9a44-402a763ebf9a",
+  "message_id": 88,
+  "missing": null,
+  "rejected_calculations": [
+    {
+      "id": "c2",
+      "operation": "multiply",
+      "reason": "Operand source 'c1' is not among the retrieved sources."
+    }
+  ],
+  "status": "answered",
+  "timings_ms": {
+    "model_pass1_ms": 15281,
+    "model_pass2_ms": 8363,
+    "persist_ms": 1363,
+    "retrieval_ms": 1375,
+    "total_ms": 26382
+  },
+  "unverified_numbers": [
+    "33.9%"
+  ],
+  "used_vision": false,
+  "verification": {
+    "checks": [
+      {
+        "details": {
+          "claims_without_valid_citation": [],
+          "invalid_ids": [],
+          "sources_sent": [
+            "S1",
+            "S2",
+            "S3",
+            "S4",
+            "S5",
+            "S6",
+            "S7"
+          ]
+        },
+        "kind": "deterministic",
+        "name": "citation_validity",
+        "passed": true
+      },
+      {
+        "details": {
+          "numbers": [
+            {
+              "approximate": false,
+              "claim_index": null,
+              "grounded_in": null,
+              "ignored_reason": null,
+              "ok": false,
+              "text": "33.9%",
+              "value": "33.9"
+            },
+            {
+              "approximate": false,
+              "claim_index": null,
+              "grounded_in": null,
+              "ignored_reason": null,
+              "ok": false,
+              "text": "($167,900)",
+              "value": "-167900"
+            },
+            {
+              "approximate": false,
+              "claim_index": null,
+              "grounded_in": null,
+              "ignored_reason": null,
+              "ok": false,
+              "text": "($125,400)",
+              "value": "-125400"
+            },
+            {
+              "approximate": false,
+              "claim_index": null,
+              "grounded_in": null,
+              "ignored_reason": null,
+              "ok": false,
+              "text": "$42,500",
+              "value": "42500"
+            },
+            {
+              "approximate": false,
+              "claim_index": null,
+              "grounded_in": null,
+              "ignored_reason": null,
+              "ok": false,
+              "text": "42500",
+              "value": "42500"
+            },
+            {
+              "approximate": false,
+              "claim_index": null,
+              "grounded_in": null,
+              "ignored_reason": null,
+              "ok": false,
+              "text": "($125,400)",
+              "value": "-125400"
+            }
+          ]
+        },
+        "kind": "deterministic",
+        "name": "number_grounding",
+        "passed": false
+      },
+      {
+        "details": {
+          "claims": [
+            {
+              "method": "lexical",
+              "overlap": 1.0,
+              "sources": [
+                "S2"
+              ],
+              "support": "supported",
+              "text": "Q4 revenue was $167,900."
+            },
+            {
+              "method": "lexical",
+              "overlap": 1.0,
+              "sources": [
+                "S2"
+              ],
+              "support": "supported",
+              "text": "Q1 revenue was $125,400."
+            }
+          ],
+          "note": "passed heuristic check \u2014 not proven correct"
+        },
+        "kind": "heuristic",
+        "name": "claim_support",
+        "passed": true
+      },
+      {
+        "details": {
+          "uncovered_sentences": []
+        },
+        "kind": "deterministic",
+        "name": "answer_coverage",
+        "passed": true
+      }
+    ],
+    "claims": [
+      {
+        "kind": "heuristic",
+        "method": "lexical",
+        "overlap": 1.0,
+        "sources": [
+          "S2"
+        ],
+        "support": "supported",
+        "text": "Q4 revenue was $167,900."
+      },
+      {
+        "kind": "heuristic",
+        "method": "lexical",
+        "overlap": 1.0,
+        "sources": [
+          "S2"
+        ],
+        "support": "supported",
+        "text": "Q1 revenue was $125,400."
+      }
+    ],
+    "confidence": "medium",
+    "disclaimer": "Heuristic checks are fallible signals and a 'passed' result does not prove the answer is correct.",
+    "mode": "both",
+    "numbers": [
+      {
+        "approximate": false,
+        "claim_index": null,
+        "grounded_in": null,
+        "ignored_reason": null,
+        "ok": false,
+        "text": "33.9%",
+        "value": "33.9"
+      },
+      {
+        "approximate": false,
+        "claim_index": null,
+        "grounded_in": null,
+        "ignored_reason": null,
+        "ok": false,
+        "text": "($167,900)",
+        "value": "-167900"
+      },
+      {
+        "approximate": false,
+        "claim_index": null,
+        "grounded_in": null,
+        "ignored_reason": null,
+        "ok": false,
+        "text": "($125,400)",
+        "value": "-125400"
+      },
+      {
+        "approximate": false,
+        "claim_index": null,
+        "grounded_in": null,
+        "ignored_reason": null,
+        "ok": false,
+        "text": "$42,500",
+        "value": "42500"
+      },
+      {
+        "approximate": false,
+        "claim_index": null,
+        "grounded_in": null,
+        "ignored_reason": null,
+        "ok": false,
+        "text": "42500",
+        "value": "42500"
+      },
+      {
+        "approximate": false,
+        "claim_index": null,
+        "grounded_in": null,
+        "ignored_reason": null,
+        "ok": false,
+        "text": "($125,400)",
+        "value": "-125400"
+      }
+    ],
+    "removed_claims": [],
+    "sources_sent": [
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7"
+    ],
+    "state": "ok",
+    "timings_ms": {
+      "answer_coverage_ms": 0,
+      "citation_validity_ms": 0,
+      "claim_support_ms": 0,
+      "number_grounding_ms": 27,
+      "total_ms": 27
+    },
+    "uncovered_sentences": []
+  }
+}

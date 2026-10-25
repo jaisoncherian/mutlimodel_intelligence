@@ -1,0 +1,45 @@
+{
+  "extraction_method": "text",
+  "is_scanned": false,
+  "ocr_confidence": null,
+  "page_number": 3,
+  "tables": [
+    {
+      "headers": [
+        "Quarter",
+        "Revenue (USD)",
+        "Operating Cost (USD)",
+        "Units Produced"
+      ],
+      "markdown": "| Quarter | Revenue (USD) | Operating Cost (USD) | Units Produced |\n| --- | --- | --- | --- |\n| Q1 2025 | 125,400 | 83,200 | 4,850 |\n| Q2 2025 | 138,750 | 91,600 | 5,120 |\n| Q3 2025 | 142,300 | 94,150 | 5,260 |\n| Q4 2025 | 167,900 | 108,400 | 5,940 |",
+      "rows": [
+        [
+          "Q1 2025",
+          "125,400",
+          "83,200",
+          "4,850"
+        ],
+        [
+          "Q2 2025",
+          "138,750",
+          "91,600",
+          "5,120"
+        ],
+        [
+          "Q3 2025",
+          "142,300",
+          "94,150",
+          "5,260"
+        ],
+        [
+          "Q4 2025",
+          "167,900",
+          "108,400",
+          "5,940"
+        ]
+      ],
+      "table_index": 0
+    }
+  ],
+  "text": "Page 3 \u2014 Quarterly Financial Table\nThe following bordered table contains the report's quarterly financial values.\nQuarter\nRevenue (USD)\nOperating Cost (USD)\nUnits Produced\nQ1 2025\n125,400\n83,200\n4,850\nQ2 2025\n138,750\n91,600\n5,120\nQ3 2025\n142,300\n94,150\n5,260\nQ4 2025\n167,900\n108,400\n5,940\nTable note: revenue and operating cost are in US dollars. The highest revenue occurred in Q4 2025."
+}

@@ -2,10 +2,94 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-page: #F6F7FB;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-surface-secondary: #FAFAFC;
+  --bg-surface-hover: #F6F7FB;
+  --bg-surface-subtle: #F1F3F9;
+  --bg-input: #FFFFFF;
+  --border-color: #E3E6EF;
+  --border-subtle: #CBD5E1;
+  --text-primary: #1F2433;
+  --text-secondary: #4B5368;
+  --text-muted: #64748B;
+  --text-inverse: #FFFFFF;
+
+  --primary: #4338CA;
+  --primary-hover: #3730A3;
+  --primary-light: #EEF2FF;
+  --primary-border: #C7D2FE;
+  --primary-text: #312E81;
+
+  --chip-ready-bg: #DCFCE7;
+  --chip-ready-text: #14532D;
+  --chip-processing-bg: #E0E7FF;
+  --chip-processing-text: #312E81;
+  --chip-failed-bg: #FEE2E2;
+  --chip-failed-text: #991B1B;
+  --chip-caution-bg: #FEF3C7;
+  --chip-caution-text: #78350F;
+  --chip-neutral-bg: #EEF0F6;
+  --chip-neutral-text: #434A5E;
+
+  --chip-citation-bg: #EEF2FF;
+  --chip-citation-text: #3730A3;
+  --chip-citation-border: #C7D2FE;
+  --chip-citation-hover: #E0E7FF;
+
+  --scrollbar-thumb: #CBD5E1;
+  --scrollbar-thumb-hover: #94A3B8;
+}
+
+.dark {
+  --bg-page: #0F172A;
+  --bg-surface: #1E293B;
+  --bg-surface-elevated: #243048;
+  --bg-surface-secondary: #162032;
+  --bg-surface-hover: #293548;
+  --bg-surface-subtle: #243048;
+  --bg-input: #162032;
+  --border-color: #334155;
+  --border-subtle: #475569;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --text-inverse: #0F172A;
+
+  --primary: #6366F1;
+  --primary-hover: #4F46E5;
+  --primary-light: #1E1B4B;
+  --primary-border: #4338CA;
+  --primary-text: #C7D2FE;
+
+  --chip-ready-bg: #064E3B;
+  --chip-ready-text: #A7F3D0;
+  --chip-processing-bg: #1E1B4B;
+  --chip-processing-text: #C7D2FE;
+  --chip-failed-bg: #7F1D1D;
+  --chip-failed-text: #FECACA;
+  --chip-caution-bg: #78350F;
+  --chip-caution-text: #FDE68A;
+  --chip-neutral-bg: #334155;
+  --chip-neutral-text: #E2E8F0;
+
+  --chip-citation-bg: #1E1B4B;
+  --chip-citation-text: #C7D2FE;
+  --chip-citation-border: #4338CA;
+  --chip-citation-hover: #312E81;
+
+  --scrollbar-thumb: #475569;
+  --scrollbar-thumb-hover: #64748B;
+}
+
 @layer base {
   html, body {
     margin: 0;
     padding: 0;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
   }
   body {
     overscroll-behavior: none;
@@ -35,14 +119,15 @@
   background: transparent;
 }
 .custom-scroll::-webkit-scrollbar-thumb {
-  background: #E3E6EF;
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 .custom-scroll::-webkit-scrollbar-thumb:hover {
-  background: #CBD5E1;
+  background: var(--scrollbar-thumb-hover);
 }
 
 .highlight-row {
-  background-color: #EEF2FF;
-  border-left: 3px solid #4338CA;
+  background-color: var(--primary-light);
+  border-left: 3px solid var(--primary);
 }
+
