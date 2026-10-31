@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="scroll-smooth" lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,22 +7,27 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,300..500,0..1,0" rel="stylesheet" />
+    <!-- Paints the right page color before the CSS arrives. Values match App.css. -->
+    <style>
+      html { background-color: #F6F7FB; color-scheme: light; }
+      html.dark { background-color: #0F1420; color-scheme: dark; }
+    </style>
     <script>
-      (function() {
+      (function () {
+        var saved = 'system';
         try {
-          var saved = localStorage.getItem('doculens_theme') || 'system';
-          var isDark = saved === 'dark' || (saved === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-          if (isDark) {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
+          var stored = localStorage.getItem('doculens_theme');
+          if (stored === 'light' || stored === 'dark') saved = stored;
         } catch (e) {}
+        var isDark = saved === 'dark';
+        if (saved === 'system' && window.matchMedia) {
+          isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        document.documentElement.classList.toggle('dark', isDark);
       })();
     </script>
   </head>
-  <body class="bg-page font-body-md text-body-md text-textPrimary antialiased selection:bg-brand selection:text-white transition-colors">
+  <body class="bg-bg font-sans text-sm text-text antialiased selection:bg-accent selection:text-on-accent">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

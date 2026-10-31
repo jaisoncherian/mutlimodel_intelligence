@@ -51,12 +51,12 @@ export default function PageImageViewer({ docId, page, filename, zoom }) {
 
   if (phase === 'failed') {
     return (
-      <div className="rounded-[8px] border border-bordercol bg-surfaceSecondary p-6 text-center space-y-3">
-        <p className="text-sm text-textPrimary">Page image unavailable</p>
+      <div className="rounded-lg border border-border bg-surface-2 p-6 text-center space-y-4">
+        <p className="text-sm text-text">Page image unavailable</p>
         <button
           type="button"
           onClick={handleRetry}
-          className="h-[36px] px-3 rounded-[8px] border border-bordercol bg-surface text-textPrimary hover:bg-surfaceSubtle text-xs font-medium transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand"
+          className="h-9 px-4 rounded-lg border border-border bg-surface text-text hover:bg-surface-2 text-xs font-medium transition-colors cursor-pointer"
         >
           Retry
         </button>
@@ -65,12 +65,12 @@ export default function PageImageViewer({ docId, page, filename, zoom }) {
   }
 
   return (
-    <div className="overflow-auto custom-scroll rounded-[6px] border border-bordercol">
+    <div className="overflow-auto custom-scroll rounded-lg border border-border">
       {phase === 'loading' && (
         <div
           role="status"
           aria-label="Loading page image"
-          className="w-full aspect-[17/22] bg-surfaceSubtle animate-pulse"
+          className="w-full aspect-[17/22] bg-surface-2 animate-pulse"
         />
       )}
       {url && (

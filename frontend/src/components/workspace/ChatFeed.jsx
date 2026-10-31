@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Icon from '../Icon.jsx';
 import ChatMessage from './ChatMessage.jsx';
 
 const SCROLL_TOP_GAP_PX = 16;
@@ -15,19 +16,19 @@ function WorkingIndicator({ startedAt, onCancel }) {
   const elapsedSeconds = Math.max(0, Math.floor((now - startedAt) / 1000));
 
   return (
-    <div className="flex items-center justify-between gap-3 bg-surface border border-bordercol rounded-[12px] px-4 py-3">
-      <div className="flex items-center gap-3 min-w-0">
-        <span role="status" className="text-sm text-textPrimary">
+    <div className="flex items-center justify-between gap-4 bg-surface border border-border rounded-xl p-4">
+      <div className="flex items-center gap-4 min-w-0">
+        <span role="status" className="text-sm text-text">
           Working on your question...
         </span>
-        <span data-testid="elapsed-seconds" className="font-mono text-xs text-textSecondary shrink-0">
+        <span data-testid="elapsed-seconds" className="font-mono text-xs text-muted shrink-0">
           {elapsedSeconds} s
         </span>
       </div>
       <button
         type="button"
         onClick={onCancel}
-        className="h-[36px] px-3 shrink-0 rounded-[8px] border border-bordercol bg-surface text-textPrimary hover:bg-surfaceSubtle text-xs font-medium transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand"
+        className="h-9 px-4 shrink-0 rounded-lg border border-border bg-surface text-text hover:bg-surface-2 text-xs font-medium transition-colors cursor-pointer"
       >
         Cancel
       </button>
@@ -42,19 +43,19 @@ function FailureNotice({ failure, onRetry, hasDocuments }) {
   return (
     <div
       role={isCancel ? 'status' : 'alert'}
-      className={`rounded-[12px] border border-bordercol px-4 py-3 space-y-2 ${
-        isCancel ? 'bg-chipNeutralBg text-chipNeutralText' : 'bg-chipCautionBg text-chipCautionText'
+      className={`rounded-xl border border-border p-4 space-y-2 ${
+        isCancel ? 'bg-chip-neutral-bg text-chip-neutral-text' : 'bg-chip-caution-bg text-chip-caution-text'
       }`}
     >
       <p className="text-sm font-semibold">{failure.title}</p>
       <p className="text-xs">{failure.message}</p>
       {failure.canRetry && (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <button
             type="button"
             onClick={onRetry}
             disabled={!canRetryNow}
-            className="h-[36px] px-3 rounded-[8px] border border-bordercol bg-surface text-textPrimary hover:bg-surfaceSubtle disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand"
+            className="h-9 px-4 rounded-lg border border-border bg-surface text-text hover:bg-surface-2 disabled:bg-surface-2 disabled:text-muted disabled:cursor-not-allowed text-xs font-medium transition-colors cursor-pointer"
           >
             Retry
           </button>
@@ -105,25 +106,12 @@ export default function ChatFeed({
 
   if (messages.length === 0 && !pending && !failure && !isOpening) {
     return (
-      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col items-center justify-center p-8 text-center text-textSecondary space-y-2">
-        <div className="w-12 h-12 rounded-full bg-brandLight text-brand flex items-center justify-center mb-2 border border-brandBorder">
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth="2"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-            />
-          </svg>
+      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col items-center justify-center p-8 text-center text-muted space-y-2">
+        <div className="w-12 h-12 rounded-full bg-accent-soft text-accent-text flex items-center justify-center mb-2 border border-accent-line">
+          <Icon name="chat" size={20} />
         </div>
-        <p className="text-sm font-semibold text-textPrimary">No messages yet</p>
-        <p className="text-xs text-textSecondary max-w-sm">
+        <p className="text-sm font-semibold text-text">No messages yet</p>
+        <p className="text-xs text-muted max-w-sm">
           Select one or more ready documents from the sidebar, then ask a question below.
         </p>
       </div>
@@ -136,14 +124,14 @@ export default function ChatFeed({
       data-testid="chat-scroller"
       className="relative flex-1 min-h-0 overflow-y-auto custom-scroll p-4 sm:p-6"
     >
-      <div ref={columnRef} className="max-w-[760px] mx-auto space-y-5">
+      <div ref={columnRef} className="max-w-[760px] mx-auto space-y-4">
         {isOpening && (
-          <p role="status" className="text-sm text-textSecondary text-center">
+          <p role="status" className="text-sm text-muted text-center">
             Loading conversation...
           </p>
         )}
         {isReopened && (
-          <p className="text-xs text-textSecondary text-center">
+          <p className="text-xs text-muted text-center">
             Saved conversation. Calculations and &quot;What is missing&quot; notes are not saved, so saved answers do
             not show them.
           </p>

@@ -1,4 +1,5 @@
 import React from 'react';
+import Icon from '../Icon.jsx';
 import { MAX_QUESTION_CHARS } from '../../api/ask.js';
 
 /**
@@ -33,12 +34,12 @@ export default function Composer({ value, onChange, onSend, hasDocuments, isWait
   };
 
   return (
-    <div className="p-4 bg-surface border-t border-bordercol shrink-0 transition-colors">
-      <div className="max-w-[760px] mx-auto space-y-1.5">
-        <label htmlFor="question-composer" className="text-xs font-medium text-textSecondary block">
+    <div className="p-4 bg-surface border-t border-border shrink-0 transition-colors">
+      <div className="max-w-[760px] mx-auto space-y-2">
+        <label htmlFor="question-composer" className="text-xs font-medium text-muted block">
           Ask a question about the selected documents
         </label>
-        <div className="border border-bordercol focus-within:border-brand focus-within:ring-1 focus-within:ring-brand rounded-[8px] bg-surface transition-all">
+        <div className="border border-control focus-within:border-accent focus-within:ring-1 focus-within:ring-accent rounded-lg bg-surface transition-colors">
           <textarea
             id="question-composer"
             ref={inputRef}
@@ -49,19 +50,19 @@ export default function Composer({ value, onChange, onSend, hasDocuments, isWait
             placeholder="For example: What was revenue in Q4 2025?"
             aria-describedby="composer-hint"
             aria-invalid={isOverLimit}
-            className="w-full text-sm text-textPrimary placeholder-textMuted p-2.5 rounded-[8px] focus:outline-none resize-none bg-transparent"
+            className="w-full block text-sm text-text placeholder-muted p-4 rounded-t-lg resize-none bg-transparent outline-none"
           />
-          <div className="flex items-center justify-between gap-3 px-3 py-2 border-t border-bordercol bg-surfaceSecondary rounded-b-[8px]">
-            <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center justify-between gap-4 px-4 py-2 border-t border-border bg-surface-2 rounded-b-lg">
+            <div className="flex items-center gap-4 min-w-0">
               <span
                 data-testid="composer-counter"
                 className={`font-mono text-xs shrink-0 ${
-                  isOverLimit ? 'text-chipFailedText font-bold' : 'text-textSecondary'
+                  isOverLimit ? 'text-chip-failed-text font-bold' : 'text-muted'
                 }`}
               >
                 {value.length} / {MAX_QUESTION_CHARS}
               </span>
-              <span id="composer-hint" className="text-xs text-textSecondary truncate">
+              <span id="composer-hint" className="text-xs text-muted">
                 {blockedReason || 'Enter to send, Shift+Enter for a new line.'}
               </span>
             </div>
@@ -70,19 +71,10 @@ export default function Composer({ value, onChange, onSend, hasDocuments, isWait
               onClick={handleSubmit}
               disabled={Boolean(blockedReason)}
               aria-label="Send question"
-              className="h-[36px] px-4 shrink-0 bg-brand hover:bg-brandHover disabled:bg-borderSubtle disabled:cursor-not-allowed text-white font-medium text-xs rounded-[8px] flex items-center space-x-1.5 shadow-sm transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand"
+              className="h-9 px-4 shrink-0 bg-accent hover:bg-accent-hover text-on-accent disabled:bg-surface disabled:text-muted disabled:border disabled:border-border disabled:cursor-not-allowed font-medium text-sm rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
             >
               <span>Send</span>
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                aria-hidden="true"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+              <Icon name="arrow-right" size={16} />
             </button>
           </div>
         </div>

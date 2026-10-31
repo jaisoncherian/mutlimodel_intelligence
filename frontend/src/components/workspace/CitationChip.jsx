@@ -19,7 +19,7 @@ export default function CitationChip({
       onClick={onClick}
       title={title}
       aria-label={`Citation ${sourceId}`}
-      className={`inline-flex items-center font-mono text-xs font-semibold bg-chipCitationBg text-chipCitationText hover:bg-brandLight focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-1 px-1.5 py-0.5 rounded border border-chipCitationBorder mx-0.5 transition-colors cursor-pointer ${className}`}
+      className={`inline-flex items-center font-mono text-xs font-semibold bg-accent-soft text-accent-text hover:border-accent px-1 py-0.5 rounded border border-accent-line mx-0.5 transition-colors cursor-pointer ${className}`}
     >
       [{sourceId}]
     </button>

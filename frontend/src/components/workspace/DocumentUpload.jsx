@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import Icon from '../Icon.jsx';
 
 /**
  * @param {Object} props
@@ -72,11 +73,11 @@ export default function DocumentUpload({
             handleClick();
           }
         }}
-        className={`border border-dashed rounded-[12px] p-3 text-center transition-all cursor-pointer group focus:outline-none focus:ring-2 focus:ring-brand ${
+        className={`border border-dashed rounded-xl p-4 text-center transition-colors cursor-pointer group ${
           isDragOver
-            ? 'border-brand bg-brandLight'
-            : 'border-borderSubtle hover:border-brand bg-surfaceSecondary hover:bg-brandLight'
-        } ${isUploading ? 'opacity-60 cursor-wait' : ''}`}
+            ? 'border-accent bg-accent-soft'
+            : 'border-control hover:border-accent bg-surface-2 hover:bg-accent-soft'
+        } ${isUploading ? 'cursor-wait' : ''}`}
       >
         <input
           ref={fileInputRef}
@@ -87,47 +88,17 @@ export default function DocumentUpload({
           className="hidden"
           disabled={isUploading}
         />
-        <div className="flex justify-center mb-1 text-brand">
+        <div className="flex justify-center mb-1 text-accent-text">
           {isUploading ? (
-            <svg
-              className="w-5 h-5 text-brand animate-spin"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v8H4z"
-              />
-            </svg>
+            <Icon name="spinner" size={20} className="animate-spin" />
           ) : (
-            <svg
-              className="w-5 h-5 text-brand group-hover:scale-110 transition-transform"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-              />
-            </svg>
+            <Icon name="upload" size={20} className="text-accent-text" />
           )}
         </div>
-        <p className="text-xs font-medium text-textPrimary">
+        <p className="text-xs font-medium text-text">
           {isUploading ? 'Uploading files...' : 'Drop PDFs here or browse'}
         </p>
-        <p className="text-[10px] text-textSecondary mt-0.5">PDF only, up to 25 MB each</p>
+        <p className="text-xs text-muted mt-0.5">PDF only, up to 25 MB each</p>
       </div>
 
       {/* Per-file Upload Feedback Callout */}
@@ -136,16 +107,16 @@ export default function DocumentUpload({
           role="region"
           aria-live="polite"
           aria-atomic="true"
-          className="p-2.5 rounded-[8px] bg-surfaceSecondary border border-bordercol text-xs space-y-1.5 animate-fadeIn"
+          className="p-2 rounded-lg bg-surface-2 border border-border text-xs space-y-2"
         >
-          <div className="flex items-center justify-between font-medium text-textPrimary">
+          <div className="flex items-center justify-between font-medium text-text">
             <span>Upload Results</span>
             {onClearFeedback && (
               <button
                 type="button"
                 onClick={onClearFeedback}
                 aria-label="Dismiss upload feedback"
-                className="text-textSecondary hover:text-textPrimary text-[11px] font-sans transition-colors cursor-pointer"
+                className="text-muted hover:text-text text-xs transition-colors cursor-pointer"
               >
                 Dismiss
               </button>
@@ -155,13 +126,13 @@ export default function DocumentUpload({
             {uploadFeedback.map((res, idx) => (
               <div
                 key={idx}
-                className={`flex items-start justify-between text-[11px] p-1.5 rounded ${
+                className={`flex items-start justify-between text-xs p-2 rounded ${
                   res.error
-                    ? 'bg-chipFailedBg text-chipFailedText border border-red-500/30'
-                    : 'bg-chipReadyBg text-chipReadyText border border-green-500/30'
+                    ? 'bg-chip-failed-bg text-chip-failed-text border border-border'
+                    : 'bg-chip-ready-bg text-chip-ready-text border border-border'
                 }`}
               >
-                <span className="font-mono truncate mr-2">{res.filename}</span>
+                <span title={res.filename} className="font-mono truncate mr-2">{res.filename}</span>
                 <span className="shrink-0 font-medium">
                   {res.error ? res.error : 'Enqueued'}
                 </span>

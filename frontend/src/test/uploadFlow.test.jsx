@@ -237,7 +237,7 @@ describe('Document Upload End-to-End Tests', () => {
 
     // Wait for the new row to appear in DocumentList from refetched documents query
     await waitFor(() => {
-      expect(screen.getByTitle('accepted.pdf')).toBeInTheDocument();
+      expect(screen.getByRole('checkbox', { name: 'Select document accepted.pdf' })).toBeInTheDocument();
       expect(screen.getByText('Processing')).toBeInTheDocument();
     });
 

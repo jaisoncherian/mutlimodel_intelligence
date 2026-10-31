@@ -1,4 +1,5 @@
 import React from 'react';
+import Icon from '../Icon.jsx';
 import DocumentUpload from './DocumentUpload.jsx';
 import DocumentList from './DocumentList.jsx';
 import ConversationList from './ConversationList.jsx';
@@ -68,129 +69,64 @@ export default function Sidebar({
 
   if (isCollapsed) {
     return (
-      <aside className="w-[60px] min-w-[60px] max-w-[60px] h-full bg-surface border-r border-bordercol flex flex-col items-center py-4 justify-between select-none z-10 shrink-0 transition-colors">
+      <aside className="w-[60px] min-w-[60px] max-w-[60px] h-full bg-surface border-r border-border flex flex-col items-center py-4 justify-between select-none z-10 shrink-0 transition-colors">
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center text-white shadow-sm">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-              />
-            </svg>
+          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-on-accent">
+            <Icon name="book" size={20} />
           </div>
           <button
             type="button"
             onClick={onToggleCollapse}
             aria-label="Expand sidebar"
-            className="p-1.5 rounded-md text-textSecondary hover:bg-surfaceSubtle hover:text-textPrimary focus:outline-none focus:ring-2 focus:ring-brand transition-colors cursor-pointer"
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-text transition-colors cursor-pointer"
             title="Expand sidebar"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-            </svg>
+            <Icon name="chevrons-right" size={16} />
           </button>
           <button
             type="button"
             onClick={onNewChat}
             aria-label="New chat"
-            className="w-9 h-9 rounded-lg bg-brand text-white flex items-center justify-center hover:bg-brandHover focus:outline-none focus:ring-2 focus:ring-brand transition-colors cursor-pointer shadow-sm"
+            className="w-9 h-9 rounded-lg bg-accent text-on-accent flex items-center justify-center hover:bg-accent-hover transition-colors cursor-pointer"
             title="New chat"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
+            <Icon name="plus" size={16} />
           </button>
         </div>
         <button
           type="button"
           onClick={onOpenSettings}
           aria-label="Settings"
-          className="p-2 rounded-md text-textSecondary hover:text-textPrimary hover:bg-surfaceSubtle focus:outline-none focus:ring-2 focus:ring-brand transition-colors cursor-pointer"
+          className="w-9 h-9 flex items-center justify-center rounded-lg text-muted hover:text-text hover:bg-surface-2 transition-colors cursor-pointer"
           title="Settings"
         >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
+          <Icon name="settings" size={20} />
         </button>
       </aside>
     );
   }
 
   return (
-    <aside className="w-[300px] min-w-[300px] max-w-[300px] h-full bg-surface border-r border-bordercol flex flex-col justify-between select-none z-10 shrink-0 transition-colors">
+    <aside className="w-[300px] min-w-[300px] max-w-[300px] h-full bg-surface border-r border-border flex flex-col justify-between select-none z-10 shrink-0 transition-colors">
       <div ref={scrollContainerRef} className="flex-1 overflow-y-auto custom-scroll p-4 space-y-4">
         {/* Header with Title and Collapse Button */}
         <div className="flex items-center justify-between pb-1">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center text-white shadow-sm">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                />
-              </svg>
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-on-accent">
+              <Icon name="book" size={20} />
             </div>
             <div>
-              <span className="font-bold text-base tracking-tight text-textPrimary">DocuLens AI</span>
+              <span className="font-bold text-base tracking-tight text-text">DocuLens AI</span>
             </div>
           </div>
           <button
             type="button"
             onClick={onToggleCollapse}
             aria-label="Collapse sidebar"
-            className="p-1.5 rounded-md text-textSecondary hover:bg-surfaceSubtle hover:text-textPrimary focus:outline-none focus:ring-2 focus:ring-brand transition-colors cursor-pointer"
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-text transition-colors cursor-pointer"
             title="Collapse sidebar"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-            </svg>
+            <Icon name="chevrons-left" size={16} />
           </button>
         </div>
 
@@ -198,24 +134,16 @@ export default function Sidebar({
         <button
           type="button"
           onClick={onNewChat}
-          className="w-full h-[44px] bg-brand hover:bg-brandHover focus:outline-none focus:ring-2 focus:ring-brand text-white font-medium text-sm rounded-[8px] flex items-center justify-center space-x-2 shadow-sm transition-all duration-150 cursor-pointer"
+          className="w-full h-11 bg-accent hover:bg-accent-hover text-on-accent font-medium text-sm rounded-lg flex items-center justify-center space-x-2 transition-colors cursor-pointer"
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth="2"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
+          <Icon name="plus" size={16} />
           <span>New chat</span>
         </button>
 
         {/* DOCUMENTS Section */}
-        <div className="space-y-2.5 pt-1">
+        <div className="space-y-2 pt-1">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold tracking-wider text-textSecondary uppercase font-sans">
+            <span className="text-xs font-semibold tracking-wider text-muted uppercase">
               DOCUMENTS
             </span>
           </div>
@@ -241,9 +169,9 @@ export default function Sidebar({
         </div>
 
         {/* CONVERSATIONS Section */}
-        <div className="space-y-2 pt-2 border-t border-bordercol">
+        <div className="space-y-2 pt-2 border-t border-border">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold tracking-wider text-textSecondary uppercase font-sans">
+            <span className="text-xs font-semibold tracking-wider text-muted uppercase">
               CONVERSATIONS
             </span>
           </div>
@@ -261,31 +189,14 @@ export default function Sidebar({
       </div>
 
       {/* Settings Footer */}
-      <div className="p-3 border-t border-bordercol bg-surface">
+      <div className="p-4 border-t border-border bg-surface">
         <button
           type="button"
           onClick={onOpenSettings}
           aria-label="Settings"
-          className="w-full h-[44px] flex items-center justify-start space-x-2.5 px-3 rounded-[8px] text-textSecondary hover:text-textPrimary hover:bg-surfaceSubtle border border-transparent hover:border-bordercol focus:outline-none focus:ring-2 focus:ring-brand transition-all cursor-pointer"
+          className="w-full h-11 flex items-center justify-start space-x-2 px-4 rounded-lg text-muted hover:text-text hover:bg-surface-2 border border-transparent hover:border-border transition-colors cursor-pointer"
         >
-          <svg
-            className="w-4 h-4 text-textSecondary"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
+          <Icon name="settings" size={16} className="text-muted" />
           <span className="text-xs font-medium">Settings</span>
         </button>
       </div>

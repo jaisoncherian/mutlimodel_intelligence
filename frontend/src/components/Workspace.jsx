@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import Icon from './Icon.jsx';
 import Sidebar from './workspace/Sidebar.jsx';
 import ChatFeed from './workspace/ChatFeed.jsx';
 import Composer from './workspace/Composer.jsx';
@@ -16,7 +17,10 @@ import { useConversations } from '../hooks/useConversations.js';
  * @param {() => void} props.onReturnToLanding
  */
 export default function Workspace({ onReturnToLanding }) {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  // On a phone the sidebar would leave no room for the chat.
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(
+    () => window.matchMedia?.('(max-width: 767px)').matches ?? false
+  );
   // On a narrow screen the pane covers the chat, so it starts collapsed there.
   const [isEvidenceOpen, setIsEvidenceOpen] = useState(
     () => window.matchMedia?.('(min-width: 1024px)').matches ?? true
@@ -77,6 +81,9 @@ export default function Workspace({ onReturnToLanding }) {
     chat.openConversation(id);
   };
 
+  const threadTitle = chat.conversationId
+    ? conversations.find((c) => c.id === chat.conversationId)?.title || 'Conversation'
+    : 'New chat';
   const readyDocs = documents.filter((d) => d.status === 'ready');
   const checkedCount = selectedDocIds.length;
   const activeCitation = activeEvidence.citation;
@@ -88,7 +95,7 @@ export default function Workspace({ onReturnToLanding }) {
       : null;
 
   return (
-    <div className="w-full h-screen max-h-screen overflow-hidden flex flex-row bg-page text-textPrimary">
+    <div className="w-full h-screen max-h-screen overflow-hidden flex flex-row bg-bg text-text">
       {/* COLUMN 1: LEFT SIDEBAR */}
       <Sidebar
         isCollapsed={isSidebarCollapsed}
@@ -119,60 +126,40 @@ export default function Workspace({ onReturnToLanding }) {
       />
 
       {/* COLUMN 2: CENTER CHAT & VERIFICATION DECK */}
-      <main className="flex-1 flex flex-col h-full bg-page min-w-0 overflow-hidden">
+      <main className="flex-1 flex flex-col h-full bg-surface min-w-0 overflow-hidden">
         {/* Header Bar */}
-        <header className="h-[56px] min-h-[56px] bg-surface border-b border-bordercol px-4 sm:px-6 flex items-center justify-between shrink-0">
-          <div className="flex items-center space-x-3">
+        <header className="h-14 min-h-14 bg-surface border-b border-border px-4 sm:px-6 flex items-center justify-between gap-4 shrink-0">
+          <div className="flex items-center gap-4 min-w-0">
             <button
               onClick={onReturnToLanding}
-              className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg border border-bordercol hover:border-borderSubtle hover:bg-surfaceSubtle focus:outline-none focus:ring-2 focus:ring-brand text-textSecondary hover:text-textPrimary text-xs font-medium transition-colors cursor-pointer"
-              title="Return to Overview"
+              aria-label="Back to overview"
+              className="h-9 flex items-center gap-2 px-2 rounded-lg border border-border hover:bg-surface-2 text-muted hover:text-text text-xs font-medium transition-colors cursor-pointer"
             >
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              <span className="hidden sm:inline">Back to Overview</span>
+              <Icon name="arrow-left" size={16} />
+              <span className="hidden sm:inline">Overview</span>
             </button>
-            <div className="h-4 w-[1px] bg-bordercol hidden sm:block" />
-            <h1 className="text-sm font-semibold text-textPrimary truncate">
-              DocuLens Workspace
+            <div className="h-4 w-[1px] bg-border hidden sm:block" />
+            <h1 title={threadTitle} className="text-base font-semibold text-text truncate">
+              {threadTitle}
             </h1>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-chipNeutralBg text-chipNeutralText border border-bordercol">
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="hidden sm:inline-block shrink-0 whitespace-nowrap px-2 py-1 rounded-full text-xs font-medium bg-chip-neutral-bg text-chip-neutral-text border border-border">
               Scope: {checkedCount} of {readyDocs.length} {readyDocs.length === 1 ? 'document' : 'documents'}
             </span>
             <button
               onClick={() => setIsEvidenceOpen(!isEvidenceOpen)}
               aria-label="Toggle evidence viewer"
               aria-expanded={isEvidenceOpen}
-              className={`p-1.5 rounded-md border text-xs font-medium transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand ${
+              className={`w-9 h-9 flex items-center justify-center rounded-lg border transition-colors cursor-pointer ${
                 isEvidenceOpen
-                  ? 'bg-brandLight border-brandBorder text-brand'
-                  : 'bg-surface border-bordercol text-textSecondary'
+                  ? 'bg-accent-soft border-accent-line text-accent-text'
+                  : 'bg-surface border-border text-muted'
               }`}
               title="Toggle Evidence Viewer"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
+              <Icon name="document" size={16} />
             </button>
           </div>
         </header>
