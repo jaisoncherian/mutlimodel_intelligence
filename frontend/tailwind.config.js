@@ -29,9 +29,14 @@ export default {
         'chip-neutral-text': 'var(--chip-neutral-text)',
         'chip-failed-bg': 'var(--chip-failed-bg)',
         'chip-failed-text': 'var(--chip-failed-text)',
+        'block-a-bg': 'var(--block-a-bg)',
+        'block-a-text': 'var(--block-a-text)',
+        'block-b-bg': 'var(--block-b-bg)',
+        'block-b-text': 'var(--block-b-text)',
         scrim: 'var(--scrim)',
       },
       fontFamily: {
+        display: ['Manrope', 'Inter', 'system-ui', 'sans-serif'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
@@ -42,8 +47,9 @@ export default {
         base: ['16px', { lineHeight: '24px' }],
         xl: ['20px', { lineHeight: '28px' }],
         '2xl': ['24px', { lineHeight: '32px' }],
-        // Landing page headline only.
-        display: ['40px', { lineHeight: '48px', letterSpacing: '-0.02em' }],
+        // Landing page headlines only.
+        hero: ['clamp(2.75rem, 6.4vw, 5.25rem)', { lineHeight: '1.04', letterSpacing: '-0.05em' }],
+        headline: ['clamp(2rem, 4vw, 3.25rem)', { lineHeight: '1.1', letterSpacing: '-0.045em' }],
       },
     },
   },

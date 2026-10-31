@@ -131,7 +131,7 @@ export default function SettingsDialog({ isOpen, onClose }) {
               Appearance
             </p>
             <p className="text-xs text-muted mb-4">
-              Choose how DocuLens AI looks to you.
+              Choose how DeepCite looks to you.
             </p>
 
             <div

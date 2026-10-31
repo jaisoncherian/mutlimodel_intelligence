@@ -82,6 +82,8 @@ const TEXT_ON = [
   ['chip-failed-text', 'chip-failed-bg'],
   // Text colors used directly on surfaces in the check details and the composer counter.
   ['chip-ready-text', 'surface-2'], ['chip-caution-text', 'surface-2'], ['chip-failed-text', 'surface-2'],
+  // The landing page's primary button and its two colored panels.
+  ['bg', 'text'], ['block-a-text', 'block-a-bg'], ['block-b-text', 'block-b-bg'],
 ];
 
 const NON_TEXT_ON = [
@@ -105,6 +107,22 @@ describe.each([
 
   it('defines the four specified surface levels', () => {
     ['bg', 'surface', 'surface-2', 'border'].forEach((name) => expect(theme[name]).toBeDefined());
+  });
+});
+
+describe('Dark theme is black with green text', () => {
+  const dark = readTheme('\\.dark');
+  const isGreen = (hex) => {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    return g > r && g > b;
+  };
+
+  it('uses a pure black page background', () => {
+    expect(dark.bg).toBe('#000000');
+  });
+
+  it.each(['text', 'muted', 'accent', 'accent-text'])('--%s is green', (name) => {
+    expect(isGreen(dark[name])).toBe(true);
   });
 });
 

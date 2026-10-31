@@ -1,5 +1,6 @@
 import React from 'react';
 import Icon from '../Icon.jsx';
+import Logo from '../Logo.jsx';
 import DocumentUpload from './DocumentUpload.jsx';
 import DocumentList from './DocumentList.jsx';
 import ConversationList from './ConversationList.jsx';
@@ -71,9 +72,7 @@ export default function Sidebar({
     return (
       <aside className="w-[60px] min-w-[60px] max-w-[60px] h-full bg-surface border-r border-border flex flex-col items-center py-4 justify-between select-none z-10 shrink-0 transition-colors">
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-on-accent">
-            <Icon name="book" size={20} />
-          </div>
+          <Logo markOnly />
           <button
             type="button"
             onClick={onToggleCollapse}
@@ -111,14 +110,7 @@ export default function Sidebar({
       <div ref={scrollContainerRef} className="flex-1 overflow-y-auto custom-scroll p-4 space-y-4">
         {/* Header with Title and Collapse Button */}
         <div className="flex items-center justify-between pb-1">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-on-accent">
-              <Icon name="book" size={20} />
-            </div>
-            <div>
-              <span className="font-bold text-base tracking-tight text-text">DocuLens AI</span>
-            </div>
-          </div>
+          <Logo />
           <button
             type="button"
             onClick={onToggleCollapse}

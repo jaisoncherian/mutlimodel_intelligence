@@ -1,6 +1,6 @@
-# DocuLens AI
+# DeepCite
 
-DocuLens AI is a multimodal PDF question-and-answer system. Phase 1 provides
+DeepCite is a multimodal PDF question-and-answer system. Phase 1 provides
 the Flask application foundation, database connection handling, health checks,
 and an idempotent Supabase Postgres schema. Phase 2 adds PDF validation,
 per-page text and image extraction, OCR, table storage, and document APIs.

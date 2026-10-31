@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
-export const THEME_STORAGE_KEY = 'doculens_theme';
+export const THEME_STORAGE_KEY = 'deepcite_theme';
+// The key used before the rename, so a saved choice survives it.
+export const LEGACY_THEME_STORAGE_KEY = 'doculens_theme';
 
 export const ThemeContext = createContext({
   theme: 'system',
@@ -15,7 +17,9 @@ export const ThemeContext = createContext({
 function getSavedTheme() {
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
-      const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
+      const saved =
+        window.localStorage.getItem(THEME_STORAGE_KEY) ||
+        window.localStorage.getItem(LEGACY_THEME_STORAGE_KEY);
       if (saved === 'light' || saved === 'dark' || saved === 'system') {
         return saved;
       }

@@ -3,20 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DocuLens AI — Document Intelligence</title>
+    <title>DeepCite | Answers that cite their page</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400..700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
     <!-- Paints the right page color before the CSS arrives. Values match App.css. -->
     <style>
       html { background-color: #F6F7FB; color-scheme: light; }
-      html.dark { background-color: #0F1420; color-scheme: dark; }
+      html.dark { background-color: #000000; color-scheme: dark; }
     </style>
     <script>
       (function () {
         var saved = 'system';
         try {
-          var stored = localStorage.getItem('doculens_theme');
+          // The second key is the name used before the rename, so a saved choice survives it.
+          var stored = localStorage.getItem('deepcite_theme') || localStorage.getItem('doculens_theme');
           if (stored === 'light' || stored === 'dark') saved = stored;
         } catch (e) {}
         var isDark = saved === 'dark';

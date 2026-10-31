@@ -1,5 +1,5 @@
 /**
- * @file API client for DocuLens AI frontend.
+ * @file API client for the DeepCite frontend.
  * Handles base URL, JSON headers, error normalization into {status, message},
  * AbortController signals, and an auth header hook point.
  */

@@ -37,44 +37,59 @@
   --chip-failed-bg: #FEE2E2;
   --chip-failed-text: #991B1B;
 
+  /* The two large colored panels on the landing page. */
+  --block-a-bg: #D1EBEB;
+  --block-a-text: #06201F;
+  --block-b-bg: #C4FF44;
+  --block-b-text: #132000;
+
   --scrim: rgb(15 20 32 / 0.5);
   --scrollbar-thumb: #C4C9D6;
   --scrollbar-thumb-hover: #7C859B;
+  --grid-line: rgb(31 36 51 / 0.07);
+  --header-glass: rgb(246 247 251 / 0.8);
 }
 
+/* Black background, green text. Amber and red stay, because they carry a warning. */
 .dark {
   color-scheme: dark;
 
-  --bg: #0F1420;
-  --surface: #161C2B;
-  --surface-2: #1E2638;
-  --border: #2A3349;
-  --control: #6B7690;
-  --text: #E6E9F2;
-  --muted: #A3ACC2;
+  --bg: #000000;
+  --surface: #000000;
+  --surface-2: #0C1610;
+  --border: #1C3024;
+  --control: #3F8F5B;
+  --text: #4ADE80;
+  --muted: #7CBF93;
 
-  /* Specified as #6366F1, but white text on that is 4.47:1, just under AA. */
-  --accent: #5F62F0;
-  --accent-hover: #5457DB;
-  --accent-soft: #232B4A;
-  --accent-line: #3D4A80;
-  --accent-text: #A5B4FC;
-  --on-accent: #FFFFFF;
+  --accent: #22C55E;
+  --accent-hover: #16A34A;
+  --accent-soft: #0B2414;
+  --accent-line: #1F6B3A;
+  --accent-text: #A7F3C0;
+  --on-accent: #000000;
 
-  --chip-ready-bg: #123D2E;
-  --chip-ready-text: #A7F3D0;
-  --chip-processing-bg: #232B4A;
-  --chip-processing-text: #C7D2FE;
-  --chip-caution-bg: #4A3410;
+  --chip-ready-bg: #0F3D22;
+  --chip-ready-text: #A7F3C0;
+  --chip-processing-bg: #10291A;
+  --chip-processing-text: #BBF7D0;
+  --chip-caution-bg: #3A2A08;
   --chip-caution-text: #FDE68A;
-  --chip-neutral-bg: #2A3349;
-  --chip-neutral-text: #E6E9F2;
-  --chip-failed-bg: #4C1D1D;
+  --chip-neutral-bg: #16241B;
+  --chip-neutral-text: #A3D9B5;
+  --chip-failed-bg: #3D0F0F;
   --chip-failed-text: #FECACA;
 
-  --scrim: rgb(0 0 0 / 0.6);
-  --scrollbar-thumb: #2A3349;
-  --scrollbar-thumb-hover: #6B7690;
+  --block-a-bg: #D1F5DF;
+  --block-a-text: #03120A;
+  --block-b-bg: #4ADE80;
+  --block-b-text: #03120A;
+
+  --scrim: rgb(0 0 0 / 0.7);
+  --scrollbar-thumb: #1C3024;
+  --scrollbar-thumb-hover: #3F8F5B;
+  --grid-line: rgb(74 222 128 / 0.08);
+  --header-glass: rgb(0 0 0 / 0.8);
 }
 
 @layer base {
@@ -94,6 +109,104 @@
   :focus-visible {
     outline: 2px solid var(--accent-text);
     outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Small uppercase instrument label used across the landing page. */
+  .eyebrow {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    line-height: 16px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+}
+
+.header-glass {
+  background: var(--header-glass);
+  backdrop-filter: blur(16px);
+}
+
+.grid-lines {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.dot-grid {
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* Scroll reveal: Reveal.jsx adds .is-visible when the element enters the screen. */
+.reveal {
+  opacity: 0;
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal-up { transform: translateY(32px); }
+.reveal-left { transform: translateX(-40px); }
+.reveal-right { transform: translateX(40px); }
+.reveal-zoom { transform: scale(0.95); }
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Lines inside a revealed figure draw themselves. They need pathLength="1". */
+.draw-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--reveal-delay, 0ms) + 200ms);
+}
+.is-visible .draw-line {
+  stroke-dashoffset: 0;
+}
+
+/* The pipeline line grows from left to right. */
+.grow-line {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.8s cubic-bezier(0.16, 1, 0.3, 1) 150ms;
+}
+.is-visible .grow-line {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .draw-line,
+  .grow-line {
+    transition: none;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .draw-line {
+    stroke-dashoffset: 0;
+  }
+  .grow-line {
+    transform: none;
+  }
+}
+
+@media print {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .draw-line {
+    stroke-dashoffset: 0;
+  }
+  .grow-line {
+    transform: none;
   }
 }
 
