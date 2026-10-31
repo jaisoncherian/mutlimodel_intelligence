@@ -1,6 +1,7 @@
 import React from 'react';
 import DocumentUpload from './DocumentUpload.jsx';
 import DocumentList from './DocumentList.jsx';
+import ConversationList from './ConversationList.jsx';
 
 /**
  * @param {Object} props
@@ -17,7 +18,14 @@ import DocumentList from './DocumentList.jsx';
  * @param {boolean} [props.isUploading]
  * @param {any} [props.uploadFeedback]
  * @param {() => void} [props.onClearFeedback]
- * @param {Array<any>} [props.conversations]
+ * @param {Array<import('../../api/types.js').ConversationSummary>} [props.conversations]
+ * @param {boolean} [props.isLoadingConversations]
+ * @param {boolean} [props.isConversationsError]
+ * @param {() => void} [props.onRetryConversations]
+ * @param {string|null} [props.activeConversationId]
+ * @param {(id: string) => void} [props.onOpenConversation]
+ * @param {(id: string) => void} [props.onDeleteConversation]
+ * @param {string|null} [props.deleteConversationError]
  * @param {() => void} [props.onNewChat]
  * @param {() => void} [props.onOpenSettings]
  * @param {boolean} [props.isLoadingDocs]
@@ -37,6 +45,13 @@ export default function Sidebar({
   uploadFeedback = null,
   onClearFeedback,
   conversations = [],
+  isLoadingConversations = false,
+  isConversationsError = false,
+  onRetryConversations,
+  activeConversationId = null,
+  onOpenConversation,
+  onDeleteConversation,
+  deleteConversationError = null,
   onNewChat,
   onOpenSettings,
   isLoadingDocs = false,
@@ -229,44 +244,16 @@ export default function Sidebar({
               CONVERSATIONS
             </span>
           </div>
-          {conversations.length === 0 ? (
-            <p className="text-[11px] text-textMuted italic py-1">No saved conversations</p>
-          ) : (
-            <div className="space-y-1">
-              {conversations.map((conv) => (
-                <div
-                  key={conv.id}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Open conversation ${conv.title}`}
-                  className={`p-2.5 rounded-[8px] cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-brand ${
-                    conv.active
-                      ? 'bg-brandLight border border-brandBorder'
-                      : 'hover:bg-surfaceSubtle border border-transparent hover:border-bordercol'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <p
-                      className={`text-xs truncate ${
-                        conv.active
-                          ? 'font-semibold text-brand'
-                          : 'font-medium text-textPrimary'
-                      }`}
-                    >
-                      {conv.title}
-                    </p>
-                    <span
-                      className={`text-[10px] font-medium shrink-0 ${
-                        conv.active ? 'text-brand' : 'text-textSecondary'
-                      }`}
-                    >
-                      {conv.time}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <ConversationList
+            conversations={conversations}
+            isLoading={isLoadingConversations}
+            isError={isConversationsError}
+            onRetry={onRetryConversations}
+            activeId={activeConversationId}
+            onOpen={onOpenConversation}
+            onDelete={onDeleteConversation}
+            deleteError={deleteConversationError}
+          />
         </div>
       </div>
 

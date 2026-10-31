@@ -20,7 +20,7 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: './src/test/jsdomNativeAbort.js',
     setupFiles: ['./src/test/setup.js'],
   },
 });

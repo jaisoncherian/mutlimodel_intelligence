@@ -76,20 +76,30 @@
  */
 
 /**
+ * @typedef {Object} StoredVerification
+ * @property {{status: string, timings_ms: Record<string, number>, usage_pass1?: any, usage?: any, reason?: string}} answering
+ * @property {VerificationPayload} [verification] - absent on rows older than the checks and on no-evidence rows
+ */
+
+/**
+ * Stored messages have no missing, calculations, rejected_calculations or
+ * unverified_numbers. See utils/storedMessages.js.
+ *
  * @typedef {Object} StoredMessage
  * @property {number} id
  * @property {string} conversation_id
  * @property {'user'|'assistant'} role
  * @property {string} content
  * @property {boolean} used_vision
- * @property {any} [verification]
+ * @property {StoredVerification|null} verification - null on user messages
  * @property {Array<StoredCitation>} citations
  * @property {string} created_at
  */
 
 /**
  * @typedef {Object} AskCitation
- * @property {string} source_id - e.g. "S1", "IMG1"
+ * @property {string|null} source_id - e.g. "S1", "IMG1"; null only on a stored citation whose id cannot be recovered
+ * @property {number} [citation_id] - stored citations only
  * @property {string} doc_id
  * @property {string} filename
  * @property {Array<string>} also_in
@@ -133,24 +143,23 @@
 
 /**
  * @typedef {Object} VerificationClaim
- * @property {number} [claim_index]
  * @property {string} text
  * @property {Array<string>} sources
- * @property {'supported'|'weak'|'unsupported'} support
- * @property {string|null} [method]
- * @property {number|null} [lexical_overlap]
- * @property {string|null} [llm_verdict]
+ * @property {'supported'|'weak'|'unsupported'|'visual_unverifiable'} support
+ * @property {string} kind - "heuristic"
+ * @property {string} method - e.g. "lexical", "none"
+ * @property {number} overlap
  */
 
 /**
  * @typedef {Object} VerificationNumber
- * @property {number|string} number
- * @property {string} raw
- * @property {number|null} [claim_index]
- * @property {string|null} [source_id]
+ * @property {string} text - the number as written in the answer
+ * @property {string|null} value - normalized value; null when the token was ignored
+ * @property {number|null} claim_index
+ * @property {string|null} grounded_in
  * @property {boolean} ok
  * @property {boolean} approximate
- * @property {string|null} [ignored_reason]
+ * @property {string|null} ignored_reason
  */
 
 /**
@@ -188,8 +197,8 @@
  * @property {Array<RejectedCalculation>} rejected_calculations
  * @property {boolean} used_vision
  * @property {Record<string, number>} [timings_ms]
- * @property {Array<string>} [unverified_numbers]
- * @property {VerificationPayload} [verification]
+ * @property {Array<string>} [unverified_numbers] - only present when non-empty
+ * @property {VerificationPayload} [verification] - absent on the no-evidence and model-failure paths
  */
 
 /**

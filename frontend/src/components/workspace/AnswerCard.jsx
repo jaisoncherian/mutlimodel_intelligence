@@ -1,239 +1,316 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CitationChip from './CitationChip.jsx';
 import VerificationDetails from './VerificationDetails.jsx';
+import {
+  cleanBackendWording,
+  formatLatency,
+  getReliability,
+  getStatusBadge,
+  humanizeName,
+  parseCitationMarkers,
+} from '../../utils/answerText.js';
 
-/**
- * @param {Object} props
- * @param {string} [props.status] - "answered" | "partial" | "insufficient_evidence"
- * @param {string} [props.confidence] - "high" | "medium" | "low" | "unchecked" | "unverified"
- * @param {string} [props.answerText]
- * @param {string} [props.latencyText] - e.g. "7.4 s"
- * @param {Array<{ label: string, onClick?: () => void }>} [props.sources]
- * @param {Array<any>} [props.calculations]
- * @param {(sourceId: string) => void} [props.onCitationClick]
- */
-export default function AnswerCard({
-  status = 'answered',
-  confidence = 'high',
-  answerText,
-  latencyText = '7.4 s',
-  sources,
-  _calculations,
-  onCitationClick,
-}) {
-  const [showInfo, setShowInfo] = useState(false);
-  const [copied, setCopied] = useState(false);
+const TONE_CLASSES = {
+  ready: 'bg-chipReadyBg text-chipReadyText',
+  caution: 'bg-chipCautionBg text-chipCautionText',
+  neutral: 'bg-chipNeutralBg text-chipNeutralText',
+};
 
-  const getReliabilityLabel = (conf) => {
-    switch (conf) {
-      case 'high':
-        return 'High: passed all automated checks';
-      case 'medium':
-        return 'Medium: some checks are weak';
-      case 'low':
-        return 'Low: parts were removed';
-      case 'unchecked':
-        return 'Unchecked';
-      case 'unverified':
-      default:
-        return 'Checks unavailable';
-    }
-  };
+function Badge({ tone, testId, children }) {
+  return (
+    <span
+      data-testid={testId}
+      data-tone={tone}
+      className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border border-bordercol ${TONE_CLASSES[tone]}`}
+    >
+      {children}
+    </span>
+  );
+}
 
-  const defaultAnswer =
-    answerText ||
-    'Revenue grew by 33.89% from Q1 2025 (125,400 USD) to Q4 2025 (167,900 USD) [S1]. Q4 2025 was also the highest-revenue quarter [S1].';
+/** Text with its [S1] and (S1, S3) markers shown as chips. */
+function CitedText({ text, citations, onCitationClick }) {
+  return parseCitationMarkers(text, citations).map((segment, index) =>
+    segment.type === 'text' ? (
+      <React.Fragment key={index}>{segment.text}</React.Fragment>
+    ) : (
+      <CitationChip
+        key={index}
+        sourceId={segment.sourceId}
+        onClick={() => onCitationClick?.(segment.citation)}
+      />
+    )
+  );
+}
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(defaultAnswer);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+function SourcesRow({ citations, onCitationClick }) {
+  return (
+    <div className="flex items-center gap-2 flex-wrap">
+      <span className="text-xs font-medium text-textSecondary">Sources:</span>
+      {citations.map((citation) => {
+        const details = [`p.${citation.page}`, citation.content_type].filter(Boolean).join(' · ');
+        return (
+          <button
+            key={citation.source_id || citation.citation_id}
+            type="button"
+            onClick={() => onCitationClick?.(citation)}
+            title={citation.filename}
+            aria-label={`Open source ${citation.source_id ? `${citation.source_id}: ` : ''}${citation.filename}, page ${citation.page}`}
+            className="max-w-full flex items-center gap-1.5 font-mono text-xs font-medium px-2.5 py-1 rounded-[6px] border border-bordercol bg-surface text-textSecondary hover:bg-surfaceSubtle hover:text-textPrimary transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand"
+          >
+            {citation.source_id && (
+              <span className="text-chipCitationText shrink-0">[{citation.source_id}]</span>
+            )}
+            <span className="truncate max-w-[220px]">{citation.filename}</span>
+            <span className="shrink-0">· {details}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
-  const defaultSources = sources || [
-    { label: 'text_table.pdf · p.3 · table', id: 'S1', active: true },
-    { label: 'text_table.pdf · p.3 · text', id: 'S2', active: false },
-  ];
+function CalculationsBlock({ calculations, citations, onCitationClick }) {
+  const citationFor = (sourceId) => citations.find((c) => c.source_id === sourceId);
 
   return (
-    <div className="w-full bg-surface rounded-[12px] border border-bordercol p-5 space-y-4 shadow-sm transition-colors">
-      {/* Top Row of Chips */}
-      <div className="flex items-center justify-between border-b border-bordercol pb-3 flex-wrap gap-2">
-        <div className="flex items-center space-x-2 flex-wrap gap-y-1">
-          {status === 'insufficient_evidence' ? (
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-chipNeutralBg text-chipNeutralText border border-bordercol">
-              Not enough evidence
-            </span>
-          ) : status === 'partial' ? (
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-chipCautionBg text-chipCautionText border border-yellow-500/20">
-              Partial
-            </span>
-          ) : (
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-chipReadyBg text-chipReadyText border border-green-500/20">
-              Answered
-            </span>
-          )}
+    <div className="rounded-[8px] border border-bordercol bg-surfaceSecondary p-3.5 space-y-2">
+      <span className="block text-xs font-semibold text-textPrimary">Calculations</span>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-xs border border-bordercol bg-surface">
+          <thead className="bg-surfaceSubtle text-textSecondary font-semibold border-b border-bordercol">
+            <tr>
+              <th scope="col" className="py-1.5 px-3">Operation</th>
+              <th scope="col" className="py-1.5 px-3">Operands</th>
+              <th scope="col" className="py-1.5 px-3">Result</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-bordercol text-textPrimary">
+            {calculations.map((calculation) => (
+              <tr key={calculation.id}>
+                <td className="py-1.5 px-3 align-top">{humanizeName(calculation.operation)}</td>
+                <td className="py-1.5 px-3 align-top">
+                  <ul className="space-y-1">
+                    {calculation.operands.map((operand, index) => {
+                      const citation = citationFor(operand.source);
+                      return (
+                        <li key={index}>
+                          {humanizeName(operand.label)}:{' '}
+                          <span className="font-mono">{operand.value_text}</span>{' '}
+                          {citation ? (
+                            <CitationChip
+                              sourceId={operand.source}
+                              onClick={() => onCitationClick?.(citation)}
+                            />
+                          ) : (
+                            <span className="font-mono text-textSecondary">{operand.source}</span>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </td>
+                <td data-testid="calculation-result" className="py-1.5 px-3 align-top font-mono font-bold">
+                  {calculation.formatted}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs text-textSecondary">Computed by code, not by the language model.</p>
+    </div>
+  );
+}
 
-          <span
-            className={`px-2.5 py-0.5 rounded-full text-xs font-medium flex items-center space-x-1 border ${
-              confidence === 'high'
-                ? 'bg-chipReadyBg text-chipReadyText border-green-500/20'
-                : confidence === 'medium'
-                ? 'bg-chipCautionBg text-chipCautionText border-yellow-500/20'
-                : 'bg-chipNeutralBg text-chipNeutralText border-bordercol'
-            }`}
-          >
-            {confidence === 'high' && (
-              <svg
-                className="w-3 h-3 text-chipReadyText"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth="2.5"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            )}
-            <span>{getReliabilityLabel(confidence)}</span>
-          </span>
+function RejectedCalculations({ rejected }) {
+  return (
+    <div className="rounded-[8px] border border-bordercol bg-chipCautionBg text-chipCautionText p-3.5 space-y-1.5">
+      <p className="text-xs font-semibold">Calculations not used</p>
+      <ul className="space-y-1 text-xs">
+        {rejected.map((item) => (
+          <li key={item.id}>
+            <span className="font-semibold">{humanizeName(item.operation)}:</span>{' '}
+            {cleanBackendWording(item.reason)}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setShowInfo(!showInfo)}
-              aria-label="Verification info"
-              className="w-5 h-5 rounded-full border border-borderSubtle text-textSecondary hover:text-textPrimary hover:border-textSecondary focus:outline-none focus:ring-2 focus:ring-brand flex items-center justify-center text-[11px] font-serif transition-colors cursor-pointer"
-              title="Verification check details"
-            >
-              i
-            </button>
-            {showInfo && (
-              <div className="absolute left-0 mt-2 w-64 p-3 bg-surface border border-bordercol rounded-xl shadow-lg text-[11px] text-textSecondary z-20">
-                <p className="font-semibold text-textPrimary mb-1">Automated Checks</p>
-                <p>
-                  Deterministic checks inspect citations and numbers. Heuristic checks inspect claim
-                  support.
-                </p>
-              </div>
-            )}
-          </div>
+function Warnings({ unmatchedNumbers, removedClaims, uncoveredSentences }) {
+  return (
+    <div className="rounded-[8px] border border-bordercol bg-chipCautionBg text-chipCautionText p-3.5 space-y-2 text-xs">
+      <p className="font-semibold">Warnings</p>
+      {unmatchedNumbers.length > 0 && (
+        <p>
+          Numbers not found in the sources or calculations:{' '}
+          <span className="font-mono">{unmatchedNumbers.join(', ')}</span>
+        </p>
+      )}
+      {removedClaims.length > 0 && (
+        <div>
+          <p>Removed by the automated checks:</p>
+          <ul className="list-disc pl-4">
+            {removedClaims.map((claim, index) => (
+              <li key={index}>{claim.text}</li>
+            ))}
+          </ul>
         </div>
+      )}
+      {uncoveredSentences.length > 0 && (
+        <div>
+          <p>Sentences not covered by a cited statement:</p>
+          <ul className="list-disc pl-4">
+            {uncoveredSentences.map((sentence, index) => (
+              <li key={index}>{sentence}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
 
-        {latencyText && (
-          <div className="font-mono text-xs text-textSecondary">{latencyText}</div>
+/**
+ * One answer, rendered only from a real /ask response or a stored message
+ * converted to the same shape (utils/storedMessages.js).
+ *
+ * @param {Object} props
+ * @param {import('../../api/types.js').AskResponse & {stored?: boolean}} props.response
+ * @param {(citation: import('../../api/types.js').AskCitation) => void} [props.onCitationClick]
+ */
+export default function AnswerCard({ response, onCitationClick }) {
+  const {
+    stored = false,
+    status,
+    answer,
+    missing,
+    citations = [],
+    calculations = [],
+    rejected_calculations: rejected = [],
+    used_vision: usedVision = false,
+    unverified_numbers: unmatchedNumbers = [],
+    verification,
+  } = response;
+
+  const [copyState, setCopyState] = useState('idle');
+  const copyTimerRef = useRef(null);
+  useEffect(() => () => clearTimeout(copyTimerRef.current), []);
+
+  const answerText = cleanBackendWording(answer);
+  const missingText = cleanBackendWording(missing);
+  const statusBadge = status ? getStatusBadge(status) : null;
+  const reliability = getReliability(verification, status);
+  const latency = formatLatency(response);
+  const removedClaims = verification?.removed_claims || [];
+  const uncoveredSentences = verification?.uncovered_sentences || [];
+  const hasWarnings =
+    unmatchedNumbers.length > 0 || removedClaims.length > 0 || uncoveredSentences.length > 0;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(answerText);
+      setCopyState('copied');
+    } catch {
+      setCopyState('failed');
+    }
+    clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = setTimeout(() => setCopyState('idle'), 2000);
+  };
+
+  return (
+    <article
+      aria-label="Answer"
+      className="w-full bg-surface rounded-[12px] border border-bordercol p-5 space-y-4 shadow-sm transition-colors"
+    >
+      <div className="flex items-center justify-between gap-2 flex-wrap border-b border-bordercol pb-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          {statusBadge && (
+            <Badge tone={statusBadge.tone} testId="status-badge">{statusBadge.label}</Badge>
+          )}
+          {reliability && (
+            <Badge tone={reliability.tone} testId="reliability-badge">{reliability.label}</Badge>
+          )}
+        </div>
+        {latency && (
+          <span data-testid="latency" title="Server time for this answer" className="font-mono text-xs text-textSecondary">
+            {latency}
+          </span>
         )}
       </div>
 
-      {/* Answer Text with Citation Chips */}
-      <div className="text-sm text-textPrimary leading-relaxed">
-        Revenue grew by{' '}
-        <span className="font-mono font-bold text-textPrimary">33.89%</span> from Q1 2025 (125,400 USD)
-        to Q4 2025 (167,900 USD){' '}
-        <CitationChip sourceId="S1" onClick={() => onCitationClick && onCitationClick('S1')} />. Q4
-        2025 was also the highest-revenue quarter{' '}
-        <CitationChip sourceId="S1" onClick={() => onCitationClick && onCitationClick('S1')} />.
-      </div>
-
-      {/* Sources Row */}
-      <div className="flex items-center space-x-2 pt-1 flex-wrap gap-y-1">
-        <span className="text-xs font-medium text-textSecondary">Sources:</span>
-        {defaultSources.map((s, idx) => (
-          <button
-            key={idx}
-            type="button"
-            onClick={() => onCitationClick && onCitationClick(s.id || 'S1')}
-            className={`font-mono text-xs font-medium px-2.5 py-1 rounded-[6px] transition-colors flex items-center space-x-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand ${
-              s.active
-                ? 'text-brand bg-brandLight border border-brandBorder'
-                : 'text-textSecondary bg-surface border border-bordercol hover:bg-surfaceSubtle'
-            }`}
-          >
-            <svg
-              className={`w-3.5 h-3.5 ${s.active ? 'text-brand' : 'text-textSecondary'}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            <span>{s.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* CALCULATION Box */}
-      <div className="rounded-[8px] border border-bordercol bg-surfaceSecondary p-3.5 space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] font-semibold tracking-wider text-brand uppercase font-sans">
-            CALCULATION
-          </span>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border border-bordercol rounded bg-surface overflow-hidden">
-            <thead className="bg-surfaceSubtle text-textSecondary font-semibold border-b border-bordercol">
-              <tr>
-                <th className="py-1.5 px-3">Operation</th>
-                <th className="py-1.5 px-3">Operands</th>
-                <th className="py-1.5 px-3">Result</th>
-              </tr>
-            </thead>
-            <tbody className="font-mono divide-y divide-bordercol text-textPrimary">
-              <tr>
-                <td className="py-1.5 px-3 font-sans text-xs">Percent change</td>
-                <td className="py-1.5 px-3 text-xs">
-                  Q1: 125,400{' '}
-                  <span className="text-brand font-semibold">
-                    <CitationChip sourceId="S1" onClick={() => onCitationClick && onCitationClick('S1')} />
-                  </span>{' '}
-                  → Q4: 167,900{' '}
-                  <span className="text-brand font-semibold">
-                    <CitationChip sourceId="S1" onClick={() => onCitationClick && onCitationClick('S1')} />
-                  </span>
-                </td>
-                <td className="py-1.5 px-3 font-bold text-xs text-textPrimary">33.89%</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p className="text-[11px] text-textSecondary">
-          Computed by code, not by the language model.
+      {answerText && (
+        <p data-testid="answer-text" className="text-sm text-textPrimary leading-relaxed whitespace-pre-wrap break-words">
+          <CitedText text={answerText} citations={citations} onCitationClick={onCitationClick} />
         </p>
-      </div>
+      )}
 
-      {/* Verification Details */}
-      <VerificationDetails />
+      {stored && !answerText && (
+        <p className="text-sm text-textSecondary">No answer text was saved for this question.</p>
+      )}
 
-      {/* Copy button */}
-      <div className="pt-1 flex justify-start">
-        <button
-          type="button"
-          onClick={handleCopy}
-          aria-label="Copy answer to clipboard"
-          className="h-8 px-3 rounded-[6px] border border-bordercol hover:border-borderSubtle bg-surface text-textSecondary hover:text-textPrimary text-xs font-medium flex items-center space-x-1.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand"
-        >
-          <svg
-            className="w-3.5 h-3.5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth="2"
+      {status !== 'answered' && missingText && (
+        <div className="rounded-[8px] border border-bordercol bg-surfaceSecondary p-3.5 space-y-1">
+          <p className="text-xs font-semibold text-textPrimary">What is missing</p>
+          <p data-testid="missing-text" className="text-sm text-textSecondary leading-relaxed whitespace-pre-wrap break-words">
+            <CitedText text={missingText} citations={citations} onCitationClick={onCitationClick} />
+          </p>
+        </div>
+      )}
+
+      {citations.length > 0 && <SourcesRow citations={citations} onCitationClick={onCitationClick} />}
+
+      {/* Deleting a document also deletes its citations (database/schema.sql). */}
+      {stored && answerText && citations.length === 0 && status !== 'insufficient_evidence' && (
+        <p className="text-xs text-textSecondary">
+          Sources for this saved answer are no longer available. The documents may have been deleted.
+        </p>
+      )}
+
+      {usedVision && (
+        <div className="rounded-[8px] border border-bordercol bg-surfaceSecondary p-3.5 text-xs">
+          <p className="font-semibold text-textPrimary">Analyzed page image</p>
+          <p className="text-textSecondary">Values read from charts are approximate.</p>
+        </div>
+      )}
+
+      {calculations.length > 0 && (
+        <CalculationsBlock
+          calculations={calculations}
+          citations={citations}
+          onCitationClick={onCitationClick}
+        />
+      )}
+
+      {rejected.length > 0 && <RejectedCalculations rejected={rejected} />}
+
+      {hasWarnings && (
+        <Warnings
+          unmatchedNumbers={unmatchedNumbers}
+          removedClaims={removedClaims}
+          uncoveredSentences={uncoveredSentences}
+        />
+      )}
+
+      {/* No badge means nothing was rated, so there are no details to show either. */}
+      {reliability && <VerificationDetails verification={verification} />}
+
+      {answerText && (
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCopy}
+            aria-label="Copy answer to clipboard"
+            className="h-[36px] px-3 rounded-[8px] border border-bordercol bg-surface text-textSecondary hover:text-textPrimary hover:bg-surfaceSubtle text-xs font-medium flex items-center space-x-1.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
-            />
-          </svg>
-          <span>{copied ? 'Copied!' : 'Copy answer'}</span>
-        </button>
-      </div>
-    </div>
+            <span>
+              {copyState === 'copied' ? 'Copied' : copyState === 'failed' ? 'Copy failed' : 'Copy answer'}
+            </span>
+          </button>
+        </div>
+      )}
+    </article>
   );
 }

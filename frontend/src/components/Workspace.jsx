@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Sidebar from './workspace/Sidebar.jsx';
 import ChatFeed from './workspace/ChatFeed.jsx';
 import Composer from './workspace/Composer.jsx';
 import EvidenceDrawer from './workspace/EvidenceDrawer.jsx';
 import SettingsDialog from './workspace/SettingsDialog.jsx';
 import { useDocuments } from '../hooks/useDocuments.js';
+import { useChat } from '../hooks/useChat.js';
+import { useConversations } from '../hooks/useConversations.js';
 
 /**
  * Workspace master screen wired to real document management API.
@@ -15,8 +17,12 @@ import { useDocuments } from '../hooks/useDocuments.js';
  */
 export default function Workspace({ onReturnToLanding }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isEvidenceOpen, setIsEvidenceOpen] = useState(false);
-  const [activeEvidence, setActiveEvidence] = useState(null);
+  // On a narrow screen the pane covers the chat, so it starts collapsed there.
+  const [isEvidenceOpen, setIsEvidenceOpen] = useState(
+    () => window.matchMedia?.('(min-width: 1024px)').matches ?? true
+  );
+  // `opening` changes on every click, so clicking a citation always returns to its page.
+  const [activeEvidence, setActiveEvidence] = useState({ citation: null, opening: 0 });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Real document management via useDocuments hook
@@ -34,17 +40,51 @@ export default function Workspace({ onReturnToLanding }) {
     clearUploadFeedback,
   } = useDocuments();
 
-  // In Stage 1, thread starts completely empty (purged of mock data)
-  const [messages] = useState([]);
-  const [conversations] = useState([]);
+  const chat = useChat({ selectedDocIds });
+  const composerRef = useRef(null);
+
+  const clearEvidence = () => setActiveEvidence((prev) => ({ citation: null, opening: prev.opening + 1 }));
+
+  const {
+    conversations,
+    isLoading: isLoadingConversations,
+    isError: isConversationsError,
+    refetch: refetchConversations,
+    deleteMutation: deleteConversationMutation,
+  } = useConversations({
+    onDeleted: (id) => {
+      if (id === chat.conversationId) {
+        chat.reset();
+        clearEvidence();
+      }
+    },
+  });
 
   const handleCitationClick = (citation) => {
-    setActiveEvidence(citation);
+    setActiveEvidence((prev) => ({ citation, opening: prev.opening + 1 }));
     setIsEvidenceOpen(true);
+  };
+
+  const handleNewChat = () => {
+    chat.reset();
+    clearEvidence();
+    composerRef.current?.focus();
+  };
+
+  const handleOpenConversation = (id) => {
+    clearEvidence();
+    chat.openConversation(id);
   };
 
   const readyDocs = documents.filter((d) => d.status === 'ready');
   const checkedCount = selectedDocIds.length;
+  const activeCitation = activeEvidence.citation;
+  const activeDocument = documents.find((d) => d.id === activeCitation?.doc_id);
+  const deleteError = deleteConversationMutation.error;
+  const deleteErrorText =
+    deleteError && deleteError.status !== 404
+      ? `Could not delete the conversation. ${deleteError.message || ''}`.trim()
+      : null;
 
   return (
     <div className="w-full h-screen max-h-screen overflow-hidden flex flex-row bg-page text-textPrimary">
@@ -64,7 +104,14 @@ export default function Workspace({ onReturnToLanding }) {
         uploadFeedback={uploadFeedback}
         onClearFeedback={clearUploadFeedback}
         conversations={conversations}
-        onNewChat={() => {}}
+        isLoadingConversations={isLoadingConversations}
+        isConversationsError={isConversationsError}
+        onRetryConversations={refetchConversations}
+        activeConversationId={chat.conversationId}
+        onOpenConversation={handleOpenConversation}
+        onDeleteConversation={(id) => deleteConversationMutation.mutate(id)}
+        deleteConversationError={deleteErrorText}
+        onNewChat={handleNewChat}
         onOpenSettings={() => setIsSettingsOpen(true)}
         isLoadingDocs={isLoadingDocs}
       />
@@ -102,7 +149,8 @@ export default function Workspace({ onReturnToLanding }) {
             </span>
             <button
               onClick={() => setIsEvidenceOpen(!isEvidenceOpen)}
-              aria-label="Toggle Evidence Viewer"
+              aria-label="Toggle evidence viewer"
+              aria-expanded={isEvidenceOpen}
               className={`p-1.5 rounded-md border text-xs font-medium transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand ${
                 isEvidenceOpen
                   ? 'bg-brandLight border-brandBorder text-brand'
@@ -127,23 +175,35 @@ export default function Workspace({ onReturnToLanding }) {
           </div>
         </header>
 
-        {/* Center Scrollable Feed Area (Clean empty state until asked) */}
-        <ChatFeed messages={messages} onCitationClick={handleCitationClick} />
+        {/* Scrolls inside its own container; the composer stays pinned below it */}
+        <ChatFeed
+          messages={chat.messages}
+          pending={chat.pending}
+          failure={chat.failure}
+          onCancel={chat.cancel}
+          onRetry={chat.retry}
+          hasDocuments={checkedCount > 0}
+          isOpening={chat.isOpening}
+          isReopened={chat.isReopened}
+          onCitationClick={handleCitationClick}
+        />
 
-        {/* Composer (disabled if no ready documents selected) */}
         <Composer
-          onSend={() => {}}
-          disabled={checkedCount === 0}
+          value={chat.draft}
+          onChange={chat.setDraft}
+          onSend={chat.send}
+          hasDocuments={checkedCount > 0}
+          isWaiting={Boolean(chat.pending) || chat.isOpening}
+          inputRef={composerRef}
         />
       </main>
 
       {/* COLUMN 3: RIGHT EVIDENCE VIEWER */}
       {isEvidenceOpen && (
         <EvidenceDrawer
-          filename={activeEvidence?.filename}
-          currentPage={activeEvidence?.page}
-          activeCitation={activeEvidence?.sourceId}
-          snippet={activeEvidence?.snippet}
+          key={activeEvidence.opening}
+          citation={activeCitation}
+          pageCount={activeDocument?.page_count}
           onClose={() => setIsEvidenceOpen(false)}
         />
       )}

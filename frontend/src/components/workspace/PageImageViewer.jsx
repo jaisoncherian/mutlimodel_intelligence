@@ -1,92 +1,89 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { getPageImage } from '../../api/documents.js';
 
 /**
+ * One page image. The signed URL lasts 300 seconds, so it lives only in this
+ * component: it is requested when the page is shown and never cached or saved.
+ * Citations have no coordinates, so nothing on the page is highlighted.
+ *
  * @param {Object} props
- * @param {number} props.currentPage
- * @param {Array<any>} [props.tableRows]
- * @param {string} [props.activeCitation]
+ * @param {string} props.docId
+ * @param {number} props.page
+ * @param {string} props.filename
+ * @param {number} props.zoom - percent of the pane width
  */
-export default function PageImageViewer({
-  currentPage = 3,
-  tableRows = [
-    { quarter: 'Q1 2025', revenue: '125,400', cost: '83,200', units: '4,850', highlighted: true },
-    { quarter: 'Q2 2025', revenue: '138,750', cost: '91,600', units: '5,120', highlighted: false },
-    { quarter: 'Q3 2025', revenue: '142,300', cost: '94,150', units: '5,260', highlighted: false },
-    { quarter: 'Q4 2025', revenue: '167,900', cost: '108,400', units: '5,940', highlighted: true },
-  ],
-  activeCitation = 'S1',
-}) {
+export default function PageImageViewer({ docId, page, filename, zoom }) {
+  const [phase, setPhase] = useState('loading'); // loading | shown | failed
+  const [url, setUrl] = useState(null);
+  const [requestNumber, setRequestNumber] = useState(0);
+  const refreshedRef = useRef(false);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setPhase('loading');
+    setUrl(null);
+    getPageImage(docId, page, { signal: controller.signal })
+      .then((data) => {
+        if (controller.signal.aborted) return;
+        if (data?.url) setUrl(data.url);
+        else setPhase('failed');
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setPhase('failed');
+      });
+    return () => controller.abort();
+  }, [docId, page, requestNumber]);
+
+  const handleImageError = () => {
+    // The usual cause is an expired URL, so one fresh URL is worth trying.
+    if (refreshedRef.current) {
+      setPhase('failed');
+      return;
+    }
+    refreshedRef.current = true;
+    setRequestNumber((n) => n + 1);
+  };
+
+  const handleRetry = () => {
+    refreshedRef.current = false;
+    setRequestNumber((n) => n + 1);
+  };
+
+  if (phase === 'failed') {
+    return (
+      <div className="rounded-[8px] border border-bordercol bg-surfaceSecondary p-6 text-center space-y-3">
+        <p className="text-sm text-textPrimary">Page image unavailable</p>
+        <button
+          type="button"
+          onClick={handleRetry}
+          className="h-[36px] px-3 rounded-[8px] border border-bordercol bg-surface text-textPrimary hover:bg-surfaceSubtle text-xs font-medium transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-white text-slate-900 rounded-[6px] border border-slate-300 p-4 shadow-md space-y-3">
-      <div className="border-b border-slate-200 pb-2">
-        <h3 className="text-xs font-bold text-slate-900">
-          Page {currentPage} — Quarterly Financial Table
-        </h3>
-        <p className="text-[10px] text-slate-600 mt-0.5">Primary accounting transcript</p>
-      </div>
-
-      <div className="overflow-hidden border border-slate-200 rounded">
-        <table className="w-full text-left text-[11px] divide-y divide-slate-200">
-          <thead className="bg-slate-50 text-slate-700 font-semibold">
-            <tr>
-              <th className="py-1.5 px-2">Quarter</th>
-              <th className="py-1.5 px-2">Revenue (USD)</th>
-              <th className="py-1.5 px-2">Operating Cost (USD)</th>
-              <th className="py-1.5 px-2">Units Produced</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200 font-mono text-slate-900">
-            {tableRows.map((row, idx) => {
-              const isHighlighted =
-                row.highlighted ||
-                (activeCitation === 'S1' &&
-                  (row.quarter === 'Q1 2025' || row.quarter === 'Q4 2025'));
-              return (
-                <tr
-                  key={idx}
-                  className={isHighlighted ? 'highlight-row bg-indigo-50 text-indigo-950' : ''}
-                >
-                  <td
-                    className={`py-1.5 px-2 ${
-                      isHighlighted ? 'font-semibold text-indigo-950' : ''
-                    }`}
-                  >
-                    {row.quarter}
-                  </td>
-                  <td
-                    className={`py-1.5 px-2 ${
-                      isHighlighted ? 'font-bold text-indigo-950' : ''
-                    }`}
-                  >
-                    {row.revenue}
-                  </td>
-                  <td
-                    className={`py-1.5 px-2 ${
-                      isHighlighted ? 'text-indigo-950' : ''
-                    }`}
-                  >
-                    {row.cost}
-                  </td>
-                  <td
-                    className={`py-1.5 px-2 ${
-                      isHighlighted ? 'text-indigo-950' : ''
-                    }`}
-                  >
-                    {row.units}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="bg-slate-50 p-2 rounded border border-slate-200">
-        <p className="text-[10px] text-slate-600 leading-tight">
-          Table note: revenue and operating cost are in US dollars. The highest revenue occurred in Q4
-          2025.
-        </p>
-      </div>
+    <div className="overflow-auto custom-scroll rounded-[6px] border border-bordercol">
+      {phase === 'loading' && (
+        <div
+          role="status"
+          aria-label="Loading page image"
+          className="w-full aspect-[17/22] bg-surfaceSubtle animate-pulse"
+        />
+      )}
+      {url && (
+        <img
+          key={url}
+          src={url}
+          alt={`Page ${page} of ${filename}`}
+          onLoad={() => setPhase('shown')}
+          onError={handleImageError}
+          style={{ width: `${zoom}%` }}
+          className={`max-w-none ${phase === 'shown' ? 'block' : 'hidden'}`}
+        />
+      )}
     </div>
   );
 }
