@@ -8,6 +8,7 @@ import ConversationList from './ConversationList.jsx';
  * @param {boolean} props.isCollapsed
  * @param {() => void} props.onToggleCollapse
  * @param {Array<any>} props.documents
+ * @param {Record<string, {startedAt: number, fromPageOpen: boolean}>} [props.processingSince]
  * @param {string[]} props.selectedDocIds
  * @param {(id: string) => void} props.onToggleDoc
  * @param {() => void} props.onSelectAll
@@ -34,6 +35,7 @@ export default function Sidebar({
   isCollapsed,
   onToggleCollapse,
   documents = [],
+  processingSince = {},
   selectedDocIds = [],
   onToggleDoc,
   onSelectAll,
@@ -227,6 +229,7 @@ export default function Sidebar({
 
           <DocumentList
             documents={documents}
+            processingSince={processingSince}
             selectedDocIds={selectedDocIds}
             onToggleDoc={onToggleDoc}
             onSelectAll={onSelectAll}

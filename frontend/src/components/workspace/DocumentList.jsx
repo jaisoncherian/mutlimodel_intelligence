@@ -1,8 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
+function formatElapsed(totalSeconds) {
+  if (totalSeconds < 60) return `${totalSeconds} s`;
+  const seconds = totalSeconds % 60;
+  return `${Math.floor(totalSeconds / 60)} m ${String(seconds).padStart(2, '0')} s`;
+}
+
+/** Elapsed time only: the API reports no progress, so there is no estimate to give. */
+function ProcessingNote({ since }) {
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="mt-1.5 pt-1.5 border-t border-bordercol text-xs text-textSecondary space-y-0.5">
+      <p>Reading the pages. Large or scanned files take longer.</p>
+      {since && (
+        <p data-testid="processing-elapsed">
+          <span className="font-mono">{formatElapsed(Math.max(0, Math.floor((now - since.startedAt) / 1000)))}</span>
+          {since.fromPageOpen && ' since this page opened'}
+        </p>
+      )}
+    </div>
+  );
+}
 
 /**
  * @param {Object} props
  * @param {Array<import('../../api/types.js').DocumentSummary>} props.documents
+ * @param {Record<string, {startedAt: number, fromPageOpen: boolean}>} [props.processingSince]
  * @param {string[]} props.selectedDocIds
  * @param {(id: string) => void} props.onToggleDoc
  * @param {() => void} props.onSelectAll
@@ -13,6 +42,7 @@ import React, { useState } from 'react';
  */
 export default function DocumentList({
   documents = [],
+  processingSince = {},
   selectedDocIds = [],
   onToggleDoc,
   onSelectAll,
@@ -29,7 +59,6 @@ export default function DocumentList({
   const anyUnchecked = readyDocs.length > 0 && readyDocs.some((d) => !selectedDocIds.includes(d.id));
 
   const formatPages = (doc) => {
-    if (doc.status === 'processing') return 'Reading pages...';
     if (doc.page_count === null || doc.page_count === undefined) return '';
     return `${doc.page_count} ${doc.page_count === 1 ? 'page' : 'pages'}`;
   };
@@ -180,6 +209,8 @@ export default function DocumentList({
                     </div>
                   </div>
                 </div>
+
+                {doc.status === 'processing' && <ProcessingNote since={processingSince[doc.id]} />}
 
                 {/* Show error_message and inline Reprocess button if document failed */}
                 {doc.status === 'failed' && (

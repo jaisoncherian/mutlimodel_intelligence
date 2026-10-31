@@ -29,6 +29,7 @@ export default function Workspace({ onReturnToLanding }) {
   const {
     documents,
     isLoading: isLoadingDocs,
+    processingSince,
     selectedDocIds,
     toggleDoc,
     selectAll,
@@ -93,6 +94,7 @@ export default function Workspace({ onReturnToLanding }) {
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         documents={documents}
+        processingSince={processingSince}
         selectedDocIds={selectedDocIds}
         onToggleDoc={toggleDoc}
         onSelectAll={selectAll}

@@ -18,6 +18,9 @@ export function useDocuments() {
   const [selectedDocIds, setSelectedDocIds] = useState([]);
   const [uploadFeedback, setUploadFeedback] = useState(null);
   const prevDocStatusesRef = useRef({});
+  // When each processing document started, as this browser saw it. uploaded_at cannot
+  // be used: reprocessing does not change it, so the time would be wrong by days.
+  const [processingSince, setProcessingSince] = useState({});
 
   const feedbackTimeoutRef = useRef(null);
 
@@ -85,6 +88,36 @@ export function useDocuments() {
     });
   }, [documents]);
 
+  // Keeps processingSince in step with the list. A document this browser did not start,
+  // such as one still processing after a page reload, is timed from now and says so.
+  useEffect(() => {
+    setProcessingSince((prev) => {
+      const next = {};
+      let changed = false;
+      documents.forEach((doc) => {
+        if (doc.status !== 'processing') return;
+        if (prev[doc.id]) {
+          next[doc.id] = prev[doc.id];
+        } else {
+          next[doc.id] = { startedAt: Date.now(), fromPageOpen: true };
+          changed = true;
+        }
+      });
+      if (Object.keys(prev).some((id) => !next[id])) changed = true;
+      return changed ? next : prev;
+    });
+  }, [documents]);
+
+  const markProcessingStarted = (ids, startedAt) => {
+    setProcessingSince((prev) => {
+      const next = { ...prev };
+      ids.forEach((id) => {
+        next[id] = { startedAt, fromPageOpen: false };
+      });
+      return next;
+    });
+  };
+
   // 3. Selection Handlers
   const toggleDoc = (id) => {
     const target = documents.find((d) => d.id === id);
@@ -112,6 +145,7 @@ export function useDocuments() {
 
   // 4. Upload Mutation: validates, builds FormData with "files", sends through API without optimistic row insertion
   const uploadMutation = useMutation({
+    onMutate: () => ({ startedAt: Date.now() }),
     mutationFn: async (files) => {
       const fileList = Array.from(files || []);
       const validFiles = [];
@@ -154,7 +188,7 @@ export function useDocuments() {
 
       return [...clientErrors, ...serverResults];
     },
-    onSuccess: (results) => {
+    onSuccess: (results, _files, context) => {
       // Update document list cache immediately with accepted files from real API response
       const acceptedDocs = (Array.isArray(results) ? results : [])
         .filter((r) => r.document_id && !r.error)
@@ -168,6 +202,7 @@ export function useDocuments() {
         }));
 
       if (acceptedDocs.length > 0) {
+        markProcessingStarted(acceptedDocs.map((d) => d.id), context.startedAt);
         queryClient.setQueryData(DOCUMENTS_QUERY_KEY, (old) => {
           const prev = Array.isArray(old) ? old : [];
           const existingIds = new Set(prev.map((d) => d.id));
@@ -226,8 +261,10 @@ export function useDocuments() {
 
   // 6. Reprocess Mutation
   const reprocessMutation = useMutation({
+    onMutate: () => ({ startedAt: Date.now() }),
     mutationFn: (docId) => reprocessDocument(docId),
-    onSuccess: (_, docId) => {
+    onSuccess: (_, docId, context) => {
+      markProcessingStarted([docId], context.startedAt);
       queryClient.setQueryData(DOCUMENTS_QUERY_KEY, (old) =>
         Array.isArray(old)
           ? old.map((d) => (d.id === docId ? { ...d, status: 'processing', error_message: null } : d))
@@ -242,6 +279,7 @@ export function useDocuments() {
     isLoading: documentsQuery.isLoading,
     isError: documentsQuery.isError,
     error: documentsQuery.error,
+    processingSince,
     selectedDocIds,
     toggleDoc,
     selectAll,
